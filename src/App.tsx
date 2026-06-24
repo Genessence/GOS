@@ -9,6 +9,9 @@ import MailWorkspace from './pages/MailWorkspace';
 import CalendarWorkspace from './pages/CalendarWorkspace';
 import Projects from './pages/Projects';
 import Team from './pages/Team';
+import Timesheets from './pages/Timesheets';
+import Leaves from './pages/Leaves';
+import Performance from './pages/Performance';
 import Integrations from './pages/Integrations';
 import Settings from './pages/Settings';
 
@@ -44,9 +47,9 @@ export const App: React.FC = () => {
             
             {/* Team management (Private routes validated dynamically inside GlobalLayout navigation list) */}
             <Route path="team" element={<Team />} />
-            <Route path="team/timesheets" element={<Team />} />
-            <Route path="team/leaves" element={<Team />} />
-            <Route path="team/kpis" element={<Team />} />
+            <Route path="team/timesheets" element={<Timesheets />} />
+            <Route path="team/leaves" element={<Leaves />} />
+            <Route path="team/kpis" element={<Performance />} />
 
             {/* Platform Integrations */}
             <Route path="integrations" element={<Integrations />} />
