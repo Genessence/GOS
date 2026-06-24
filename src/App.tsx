@@ -12,8 +12,11 @@ import Team from './pages/Team';
 import Timesheets from './pages/Timesheets';
 import Leaves from './pages/Leaves';
 import Performance from './pages/Performance';
-import Integrations from './pages/Integrations';
 import Settings from './pages/Settings';
+import TeamChat from './pages/TeamChat';
+import PendingReviews from './pages/PendingReviews';
+import Notifications from './pages/Notifications';
+import ProjectsOverview from './pages/ProjectsOverview';
 
 export const App: React.FC = () => {
   return (
@@ -41,9 +44,13 @@ export const App: React.FC = () => {
             {/* Workspace paths */}
             <Route path="workspace/mail" element={<MailWorkspace />} />
             <Route path="workspace/calendar" element={<CalendarWorkspace />} />
+            <Route path="workspace/chat" element={<TeamChat />} />
+            <Route path="workspace/reviews" element={<PendingReviews />} />
+            <Route path="notifications" element={<Notifications />} />
             
             {/* Projects & Kanban boards */}
             <Route path="projects" element={<Projects />} />
+            <Route path="projects/overview" element={<ProjectsOverview />} />
             
             {/* Team management (Private routes validated dynamically inside GlobalLayout navigation list) */}
             <Route path="team" element={<Team />} />
@@ -51,8 +58,8 @@ export const App: React.FC = () => {
             <Route path="team/leaves" element={<Leaves />} />
             <Route path="team/kpis" element={<Performance />} />
 
-            {/* Platform Integrations */}
-            <Route path="integrations" element={<Integrations />} />
+            {/* Platform Integrations redirected to Settings page tab */}
+            <Route path="integrations" element={<Navigate to="/settings?tab=integrations" replace />} />
 
             {/* Core Settings */}
             <Route path="settings" element={<Settings />} />

@@ -155,7 +155,7 @@ export const Leaves: React.FC = () => {
       </div>
 
       {/* Dashboard Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
         {[
           { title: "Available Leaves", val: `${totalAvailable} days`, sub: "Total balance remaining", style: "from-blue-500 to-indigo-600" },
           { title: "Casual Leaves", val: `${balances.casual.total - balances.casual.used} / ${balances.casual.total}`, sub: "Used: 6 days", style: "from-violet-500 to-purple-600" },
@@ -163,7 +163,7 @@ export const Leaves: React.FC = () => {
           { title: "Earned Leaves", val: `${balances.earned.total - balances.earned.used} / ${balances.earned.total}`, sub: "Used: 10 days", style: "from-amber-500 to-orange-600" },
           { title: "Pending Requests", val: `${pendingCount} pending`, sub: "Manager workflow loop", style: "from-teal-500 to-emerald-600" }
         ].map((card, idx) => (
-          <div key={idx} className={`p-4.5 rounded-2xl border transition-all ${
+          <div key={idx} className={`p-4 sm:p-5 rounded-2xl border transition-all ${
             isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
           }`}>
             <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{card.title}</h4>
@@ -185,7 +185,7 @@ export const Leaves: React.FC = () => {
           <div className={`p-6 rounded-2xl border ${
             isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
           }`}>
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-850 pb-2 mb-4 flex items-center space-x-2">
+            <h3 className={`text-xs font-bold ${isDark ? 'text-white border-slate-800/60' : 'text-slate-800 border-slate-200'} uppercase tracking-wider border-b pb-2 mb-4 flex items-center space-x-2`}>
               <Sparkles className="w-4 h-4 text-indigo-400" />
               <span>Leave Balance Tracker</span>
             </h3>
@@ -214,9 +214,9 @@ export const Leaves: React.FC = () => {
           <div className={`p-6 rounded-2xl border ${
             isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
           }`}>
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-850 pb-2 mb-4 flex items-center space-x-2">
+            <h3 className={`text-xs font-bold ${isDark ? 'text-white border-slate-800/60' : 'text-slate-800 border-slate-200'} uppercase tracking-wider border-b pb-2 mb-4 flex items-center space-x-2`}>
               <Plus className="w-4 h-4 text-indigo-400" />
-              <span>Apply for Leave</span>
+              <span>Request Leave</span>
             </h3>
 
             <form onSubmit={handleApplyLeave} className="space-y-4">
@@ -228,7 +228,7 @@ export const Leaves: React.FC = () => {
                   className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none transition-all ${
                     isDark 
                       ? 'bg-[#141624]/60 border-slate-800 text-white focus:border-indigo-500' 
-                      : 'bg-slate-50 border-slate-200 text-slate-805 focus:border-indigo-500'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 focus:border-indigo-500'
                   }`}
                 >
                   <option>Casual Leave</option>
@@ -252,7 +252,7 @@ export const Leaves: React.FC = () => {
                     className={`w-full border rounded-xl px-3 py-2.5 text-xs outline-none transition-all ${
                       isDark 
                         ? 'bg-[#141624]/60 border-slate-800 text-white focus:border-indigo-500' 
-                        : 'bg-slate-50 border-slate-200 text-slate-850 focus:border-indigo-500'
+                        : 'bg-slate-50 border-slate-200 text-slate-700 focus:border-indigo-500'
                     }`}
                   />
                 </div>
@@ -266,7 +266,7 @@ export const Leaves: React.FC = () => {
                     className={`w-full border rounded-xl px-3 py-2.5 text-xs outline-none transition-all ${
                       isDark 
                         ? 'bg-[#141624]/60 border-slate-800 text-white focus:border-indigo-500' 
-                        : 'bg-slate-50 border-slate-200 text-slate-850 focus:border-indigo-500'
+                        : 'bg-slate-50 border-slate-200 text-slate-700 focus:border-indigo-500'
                     }`}
                   />
                 </div>
@@ -283,7 +283,7 @@ export const Leaves: React.FC = () => {
                   className={`w-full border rounded-xl px-4 py-2.5 text-xs outline-none resize-none transition-all ${
                     isDark 
                       ? 'bg-[#141624]/60 border-slate-800 text-white focus:border-indigo-500' 
-                      : 'bg-slate-50 border-slate-200 text-slate-805 focus:border-indigo-500'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 focus:border-indigo-500'
                   }`}
                 />
               </div>
@@ -324,9 +324,9 @@ export const Leaves: React.FC = () => {
           <div className={`p-6 rounded-2xl border ${
             isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
           }`}>
-            <div className="flex items-center justify-between border-b border-slate-850 pb-4 mb-4">
+            <div className={`flex items-center justify-between border-b pb-4 mb-4 ${isDark ? 'border-slate-800/60' : 'border-slate-200'}`}>
               <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">Leave Calendar</h3>
+                <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-800'} uppercase tracking-wider`}>Leave Calendar</h3>
                 <p className="text-[10px] text-slate-400 mt-1 font-mono">June 2026 Out of Office schedule</p>
               </div>
               <div className="flex items-center space-x-3 text-[10px] font-bold">
@@ -369,7 +369,7 @@ export const Leaves: React.FC = () => {
           <div className={`p-6 rounded-2xl border ${
             isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
           }`}>
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-850 pb-3 mb-4">Leave Request History</h3>
+            <h3 className={`text-xs font-bold ${isDark ? 'text-white border-slate-800/60' : 'text-slate-800 border-slate-200'} uppercase tracking-wider border-b pb-3 mb-4`}>Leave Request History</h3>
             
             <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
               {leaveHistory.map((req) => (
@@ -388,11 +388,15 @@ export const Leaves: React.FC = () => {
                         {req.startDate} to {req.endDate} ({req.duration} {req.duration === 1 ? 'day' : 'days'})
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300 font-medium">"{req.reason}"</p>
+                    <p className={`text-xs font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>"{req.reason}"</p>
                     
                     {/* Workflow status stepper */}
                     {req.status === 'Pending' && (
-                      <div className="flex items-center space-x-1 text-[9px] font-bold text-slate-400 mt-2 bg-slate-900/20 p-2 rounded-lg border border-slate-800/40 w-fit">
+                      <div className={`flex items-center space-x-1 text-[9px] font-bold mt-2 p-2 rounded-lg border w-fit ${
+                        isDark 
+                          ? 'text-slate-400 bg-slate-900/20 border-slate-800/40' 
+                          : 'text-slate-600 bg-slate-50 border-slate-200'
+                      }`}>
                         <span>Workflow:</span>
                         <span className="text-indigo-400">Employee</span>
                         <ArrowRight className="w-2.5 h-2.5 text-slate-500" />
