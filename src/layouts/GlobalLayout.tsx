@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useNavigate, Outlet } from 'react-router-dom';
 import { useAuth, UserRole } from '../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  Mail, 
-  Calendar, 
-  Users, 
-  Clock, 
-  FileText, 
-  Settings, 
-  ChevronLeft, 
-  ChevronRight, 
-  Search, 
-  Bell, 
-  Plus, 
-  MessageSquare, 
-  LogOut, 
-  ShieldAlert, 
+import {
+  LayoutDashboard,
+  Mail,
+  Calendar,
+  Users,
+  Clock,
+  FileText,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  Bell,
+  Plus,
+  MessageSquare,
+  LogOut,
+  ShieldAlert,
   ChevronDown,
   Layers,
   Sparkles,
@@ -58,9 +58,6 @@ export const GlobalLayout: React.FC = () => {
         { name: 'Mail Workspace', path: '/workspace/mail', icon: <Mail className="w-5 h-5" /> },
         { name: 'Calendar & MoM', path: '/workspace/calendar', icon: <Calendar className="w-5 h-5" /> },
         { name: 'Kanban Boards', path: '/projects', icon: <Kanban className="w-5 h-5" /> },
-        { name: 'Projects', path: '/projects', icon: <CheckSquare className="w-5 h-5" /> },
-        { name: 'Documents', path: '/projects', icon: <FileText className="w-5 h-5" /> },
-        { name: 'Reports', path: '/dashboard', icon: <BarChart4 className="w-5 h-5" /> }
       ]
     },
     {
@@ -92,24 +89,19 @@ export const GlobalLayout: React.FC = () => {
   };
 
   return (
-    <div className={`flex h-screen w-screen overflow-hidden font-sans transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-[#0c0d14] text-slate-100' : 'bg-slate-50 text-slate-855'
-    }`}>
+    <div className={`flex h-screen w-screen overflow-hidden font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-[#0c0d14] text-slate-100' : 'bg-slate-50 text-slate-855'
+      }`}>
       {/* Sidebar Navigation */}
-      <aside 
-        className={`border-r flex flex-col justify-between transition-all duration-300 relative z-30 ${
-          collapsed ? 'w-20' : 'w-64'
-        } ${
-          theme === 'dark' ? 'bg-[#0c0d14] border-slate-800/60' : 'bg-white border-slate-200'
-        }`}
+      <aside
+        className={`border-r flex flex-col justify-between transition-all duration-300 relative z-30 ${collapsed ? 'w-20' : 'w-64'
+          } ${theme === 'dark' ? 'bg-[#0c0d14] border-slate-800/60' : 'bg-white border-slate-200'
+          }`}
       >
         {/* Header Branding */}
         <div>
-          <div className={`h-20 flex items-center border-b transition-all ${
-            collapsed ? 'px-2 justify-center' : 'px-6 justify-between'
-          } ${
-            theme === 'dark' ? 'border-slate-800/40' : 'border-slate-100'
-          }`}>
+          <div className={`h-20 flex items-center border-b transition-all ${collapsed ? 'px-2 justify-center' : 'px-6 justify-between'
+            } ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-100'
+            }`}>
             <Link to="/dashboard" className="flex items-center space-x-3 overflow-hidden">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/20">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
@@ -125,15 +117,13 @@ export const GlobalLayout: React.FC = () => {
                 </div>
               )}
             </Link>
-            
+
             {/* Collapse / Expand Trigger Button */}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className={`p-1 rounded-md transition-colors ${
-                collapsed ? 'mt-1' : ''
-              } ${
-                theme === 'dark' ? 'text-slate-500 hover:text-white hover:bg-slate-800/40' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
-              }`}
+              className={`p-1 rounded-md transition-colors ${collapsed ? 'mt-1' : ''
+                } ${theme === 'dark' ? 'text-slate-500 hover:text-white hover:bg-slate-800/40' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                }`}
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
             </button>
@@ -144,10 +134,9 @@ export const GlobalLayout: React.FC = () => {
             <NavLink
               to="/dashboard"
               className={({ isActive }) =>
-                `w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all shadow-md ${
-                  isActive
-                    ? 'bg-[#2f32a6] text-white shadow-indigo-600/20'
-                    : theme === 'dark'
+                `w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all shadow-md ${isActive
+                  ? 'bg-[#2f32a6] text-white shadow-indigo-600/20'
+                  : theme === 'dark'
                     ? 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`
@@ -172,9 +161,8 @@ export const GlobalLayout: React.FC = () => {
               return (
                 <div key={idx} className="space-y-1">
                   {!collapsed && (
-                    <span className={`text-[9px] font-bold tracking-wider px-3 block mb-1.5 ${
-                      theme === 'dark' ? 'text-slate-500' : 'text-slate-400'
-                    }`}>
+                    <span className={`text-[9px] font-bold tracking-wider px-3 block mb-1.5 ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'
+                      }`}>
                       {section.title}
                     </span>
                   )}
@@ -183,10 +171,9 @@ export const GlobalLayout: React.FC = () => {
                       key={itemIdx}
                       to={item.path}
                       className={({ isActive }) =>
-                        `flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${
-                          isActive
-                            ? 'bg-indigo-600/10 text-indigo-500 border border-indigo-500/20'
-                            : theme === 'dark'
+                        `flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${isActive
+                          ? 'bg-indigo-600/10 text-indigo-500 border border-indigo-500/20'
+                          : theme === 'dark'
                             ? 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200'
                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`
@@ -204,16 +191,14 @@ export const GlobalLayout: React.FC = () => {
         </div>
 
         {/* Footer Area - App Promo & User Profile */}
-        <div className={`p-4 border-t space-y-4 ${
-          theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
-        }`}>
+        <div className={`p-4 border-t space-y-4 ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
+          }`}>
           {/* Mobile App Download Card (matching mockups) */}
           {!collapsed && (
-            <div className={`p-4 rounded-2xl border relative overflow-hidden ${
-              theme === 'dark' ? 'bg-gradient-to-br from-[#131526] to-[#1e1438] border-slate-800/40' : 'bg-slate-50 border-slate-200/80'
-            }`}>
+            <div className={`p-4 rounded-2xl border relative overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-br from-[#131526] to-[#1e1438] border-slate-800/40' : 'bg-slate-50 border-slate-200/80'
+              }`}>
               <div className="absolute -right-6 -bottom-6 opacity-10">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-5 20c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5.25-3H6.75V6h10.5v12z"/></svg>
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-5 20c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5.25-3H6.75V6h10.5v12z" /></svg>
               </div>
               <h4 className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>G-OS Mobile App</h4>
               <p className="text-[10px] text-slate-450 mt-1">Stay connected on the go.</p>
@@ -227,11 +212,9 @@ export const GlobalLayout: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-              className={`w-full flex items-center justify-between p-2 rounded-xl transition-all ${
-                collapsed ? 'justify-center' : ''
-              } ${
-                theme === 'dark' ? 'hover:bg-slate-800/30' : 'hover:bg-slate-100'
-              }`}
+              className={`w-full flex items-center justify-between p-2 rounded-xl transition-all ${collapsed ? 'justify-center' : ''
+                } ${theme === 'dark' ? 'hover:bg-slate-800/30' : 'hover:bg-slate-100'
+                }`}
             >
               <div className="flex items-center space-x-3 text-left">
                 <img
@@ -251,11 +234,9 @@ export const GlobalLayout: React.FC = () => {
 
             {/* Role Switcher Dropdown popup */}
             {showRoleDropdown && (
-              <div className={`absolute bottom-full left-0 mb-2 w-52 rounded-2xl shadow-2xl p-2 z-50 space-y-1 ${
-                collapsed ? 'left-16' : ''
-              } ${
-                theme === 'dark' ? 'bg-[#0f111a] border border-slate-800' : 'bg-white border border-slate-200'
-              }`}>
+              <div className={`absolute bottom-full left-0 mb-2 w-52 rounded-2xl shadow-2xl p-2 z-50 space-y-1 ${collapsed ? 'left-16' : ''
+                } ${theme === 'dark' ? 'bg-[#0f111a] border border-slate-800' : 'bg-white border border-slate-200'
+                }`}>
                 <div className={`px-3 py-2 border-b ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-100'}`}>
                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Switch Persona</span>
                 </div>
@@ -263,13 +244,12 @@ export const GlobalLayout: React.FC = () => {
                   <button
                     key={r}
                     onClick={() => handleRoleChange(r)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl text-left transition-all ${
-                      user.role === r 
-                        ? 'bg-indigo-600/10 text-indigo-500' 
-                        : theme === 'dark'
+                    className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl text-left transition-all ${user.role === r
+                      ? 'bg-indigo-600/10 text-indigo-500'
+                      : theme === 'dark'
                         ? 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-200'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
+                      }`}
                   >
                     <span>{r}</span>
                     {user.role === r && <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />}
@@ -291,13 +271,11 @@ export const GlobalLayout: React.FC = () => {
       </aside>
 
       {/* Main Workspace Frame */}
-      <div className={`flex-1 flex flex-col overflow-hidden transition-colors duration-300 ${
-        theme === 'dark' ? 'bg-[#0c0d14]' : 'bg-[#f8fafc]'
-      }`}>
-        {/* Top Navbar */}
-        <header className={`h-16 border-b px-6 flex items-center justify-between z-20 flex-shrink-0 transition-colors ${
-          theme === 'dark' ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-200 bg-white'
+      <div className={`flex-1 flex flex-col overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-[#0c0d14]' : 'bg-[#f8fafc]'
         }`}>
+        {/* Top Navbar */}
+        <header className={`h-16 border-b px-6 flex items-center justify-between z-20 flex-shrink-0 transition-colors ${theme === 'dark' ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-200 bg-white'
+          }`}>
           {/* Left search */}
           <div className="flex items-center space-x-4 w-96">
             <div className="relative w-full">
@@ -309,11 +287,10 @@ export const GlobalLayout: React.FC = () => {
                 placeholder="Search anything (⌘ + K)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full pl-9 pr-4 py-2 border rounded-xl text-xs outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all ${
-                  theme === 'dark'
-                    ? 'bg-[#141624]/60 border-slate-800/80 text-white placeholder-slate-500'
-                    : 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-400'
-                }`}
+                className={`w-full pl-9 pr-4 py-2 border rounded-xl text-xs outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all ${theme === 'dark'
+                  ? 'bg-[#141624]/60 border-slate-800/80 text-white placeholder-slate-500'
+                  : 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-400'
+                  }`}
               />
             </div>
           </div>
@@ -329,26 +306,23 @@ export const GlobalLayout: React.FC = () => {
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className={`p-2 rounded-xl transition-all ${
-                theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
-              }`}
+              className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
+                }`}
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
             {/* Notifications */}
-            <button className={`p-2 rounded-xl relative transition-all ${
-              theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
-            }`}>
+            <button className={`p-2 rounded-xl relative transition-all ${theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
+              }`}>
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 border border-[#0c0d14]" />
             </button>
 
             {/* Conversations / Help */}
-            <button className={`p-2 rounded-xl transition-all ${
-              theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
-            }`}>
+            <button className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
+              }`}>
               <MessageSquare className="w-4 h-4" />
             </button>
 
@@ -356,13 +330,11 @@ export const GlobalLayout: React.FC = () => {
             <span className={`w-px h-5 ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'}`} />
 
             {/* Quick Identity HUD badge */}
-            <div className={`flex items-center space-x-2 border px-3 py-1.5 rounded-xl ${
-              theme === 'dark' ? 'bg-[#141624]/60 border-slate-800' : 'bg-slate-50 border-slate-200'
-            }`}>
-              <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-              <span className={`text-[10px] font-semibold tracking-wider uppercase ${
-                theme === 'dark' ? 'text-slate-300' : 'text-slate-655'
+            <div className={`flex items-center space-x-2 border px-3 py-1.5 rounded-xl ${theme === 'dark' ? 'bg-[#141624]/60 border-slate-800' : 'bg-slate-50 border-slate-200'
               }`}>
+              <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
+              <span className={`text-[10px] font-semibold tracking-wider uppercase ${theme === 'dark' ? 'text-slate-300' : 'text-slate-655'
+                }`}>
                 {user.role} mode
               </span>
             </div>
@@ -370,9 +342,8 @@ export const GlobalLayout: React.FC = () => {
         </header>
 
         {/* Workspace Dynamic Content Area */}
-        <main className={`flex-1 overflow-y-auto relative transition-colors duration-300 ${
-          theme === 'dark' ? 'bg-[#0a0b10]' : 'bg-[#f1f5f9]'
-        }`}>
+        <main className={`flex-1 overflow-y-auto relative transition-colors duration-300 ${theme === 'dark' ? 'bg-[#0a0b10]' : 'bg-[#f1f5f9]'
+          }`}>
           <Outlet />
         </main>
       </div>

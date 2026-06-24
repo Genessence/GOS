@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type UserRole = 'Director' | 'Project Lead' | 'Engineer';
 
@@ -42,6 +42,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
+  // Sync Tailwind's class-based dark mode to the <html> element
+  // Tailwind darkMode:'class' requires the 'dark' class on document.documentElement
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
@@ -50,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 800));
     const name = email.split('@')[0].split('.').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-    
+
     setUser({
       id: `usr-${Math.random().toString(36).substr(2, 9)}`,
       name: name || 'Kavya Chopra',

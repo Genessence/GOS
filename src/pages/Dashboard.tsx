@@ -1,14 +1,14 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { 
-  FolderGit2, 
-  CheckSquare, 
-  MessageSquareDiff, 
-  Users, 
-  Calendar, 
-  Mail, 
-  Plus, 
-  Bell, 
+import {
+  FolderGit2,
+  CheckSquare,
+  MessageSquareDiff,
+  Users,
+  Calendar,
+  Mail,
+  Plus,
+  Bell,
   MessageSquare,
   Sparkles,
   ChevronDown
@@ -73,9 +73,8 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Date Selector */}
-        <div className={`border px-4 py-2.5 rounded-xl flex items-center space-x-2 text-xs font-semibold ${
-          theme === 'dark' ? 'bg-[#141624]/60 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700 shadow-xs'
-        }`}>
+        <div className={`border px-4 py-2.5 rounded-xl flex items-center space-x-2 text-xs font-semibold ${theme === 'dark' ? 'bg-[#141624]/60 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700 shadow-xs'
+          }`}>
           <Calendar className="w-4 h-4 text-indigo-500" />
           <span>May 20, 2026</span>
         </div>
@@ -108,18 +107,16 @@ export const Dashboard: React.FC = () => {
         <div className={`border p-6 rounded-2xl space-y-6 lg:col-span-2 ${cardBgClass}`}>
           <div className="flex items-center justify-between">
             <h3 className={`text-base font-bold ${textTitleClass}`}>Project Overview</h3>
-            <select className={`border text-xs rounded-xl px-3 py-1.5 outline-none ${
-              theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-350' : 'bg-slate-50 border-slate-200 text-slate-600'
-            }`}>
+            <select className={`border text-xs rounded-xl px-3 py-1.5 outline-none ${theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-350' : 'bg-slate-50 border-slate-200 text-slate-600'
+              }`}>
               <option>All Projects</option>
             </select>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center py-4">
             {/* Left Column: Radial progress and indicators */}
-            <div className={`flex flex-col sm:flex-row items-center justify-around md:col-span-1 pr-4 gap-4 border-r ${
-              theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
-            }`}>
+            <div className={`flex flex-col sm:flex-row items-center justify-around md:col-span-1 pr-4 gap-4 border-r ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
+              }`}>
               {/* Visual simulation of Total Progress radial chart */}
               <div className="flex items-center justify-center relative flex-shrink-0">
                 <svg className="w-32 h-32 transform -rotate-90">
@@ -163,21 +160,18 @@ export const Dashboard: React.FC = () => {
             <div className="md:col-span-2 space-y-4 relative">
               <div className="flex items-center justify-between">
                 <span className={`text-xs font-bold uppercase tracking-wider ${textMutedClass}`}>Progress Over Time</span>
-                <select className={`border text-[10px] rounded-lg px-2.5 py-1 outline-none ${
-                  theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
-                }`}>
+                <select className={`border text-[10px] rounded-lg px-2.5 py-1 outline-none ${theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
+                  }`}>
                   <option>This Month</option>
                 </select>
               </div>
 
               {/* High fidelity SVG line chart */}
-              <div className={`w-full h-44 relative rounded-xl p-2 border ${
-                theme === 'dark' ? 'bg-[#0a0b10]/40 border-slate-800/20' : 'bg-slate-50/50 border-slate-200/50'
-              }`}>
-                {/* Custom tooltip badge matching mockup */}
-                <div className={`absolute left-[58%] top-[12%] border shadow-xl rounded-lg px-3 py-1.5 z-10 flex flex-col items-center ${
-                  theme === 'dark' ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+              <div className={`w-full h-44 relative rounded-xl p-2 border ${theme === 'dark' ? 'bg-[#0a0b10]/40 border-slate-800/20' : 'bg-slate-50/50 border-slate-200/50'
                 }`}>
+                {/* Custom tooltip badge matching mockup */}
+                <div className={`absolute left-[58%] top-[12%] border shadow-xl rounded-lg px-3 py-1.5 z-10 flex flex-col items-center ${theme === 'dark' ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+                  }`}>
                   <span className={`text-[9px] font-bold leading-none ${theme === 'dark' ? 'text-slate-400' : 'text-slate-450'}`}>May 20</span>
                   <span className={`text-xs font-bold mt-0.5 leading-none ${theme === 'dark' ? 'text-indigo-650' : 'text-indigo-400'}`}>68%</span>
                 </div>
@@ -296,10 +290,9 @@ export const Dashboard: React.FC = () => {
               <div key={i} className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-semibold">
                   <span className={theme === 'dark' ? 'text-slate-350' : 'text-slate-700'}>{project.name}</span>
-                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                    project.status === 'On Track' ? 'bg-emerald-500/10 text-emerald-500' :
-                    project.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500'
-                  }`}>
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${project.status === 'On Track' ? 'bg-emerald-500/10 text-emerald-500' :
+                      project.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500'
+                    }`}>
                     {project.status}
                   </span>
                 </div>
@@ -320,9 +313,8 @@ export const Dashboard: React.FC = () => {
 
           <div className="space-y-4">
             {notifications.map((notif, i) => (
-              <div key={i} className={`flex items-start space-x-3 p-2 rounded-xl transition-all ${
-                theme === 'dark' ? 'hover:bg-slate-800/20' : 'hover:bg-slate-100/50'
-              }`}>
+              <div key={i} className={`flex items-start space-x-3 p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-slate-800/20' : 'hover:bg-slate-100/50'
+                }`}>
                 <div className="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0" />
                 <div className="flex-1 space-y-0.5">
                   <h4 className={`text-xs font-bold leading-tight ${textTitleClass}`}>{notif.title}</h4>
@@ -338,23 +330,20 @@ export const Dashboard: React.FC = () => {
       <div className={`border p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 ${cardBgClass}`}>
         <span className={`text-xs font-bold uppercase tracking-wider ${textMutedClass}`}>Connected Integrations</span>
         <div className="flex flex-wrap gap-4">
-          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${
-            theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
-          }`}>
+          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
+            }`}>
             <Mail className="w-4 h-4 text-rose-500" />
             <span className={`text-[11px] font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Gmail</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           </div>
-          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${
-            theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
-          }`}>
+          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
+            }`}>
             <Calendar className="w-4 h-4 text-indigo-550" />
             <span className={`text-[11px] font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Calendar</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           </div>
-          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${
-            theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
-          }`}>
+          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
+            }`}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-400">
               <path d="M6 3v12" />
               <circle cx="18" cy="6" r="3" />
