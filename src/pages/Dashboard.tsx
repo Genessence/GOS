@@ -117,13 +117,20 @@ export const Dashboard: React.FC = () => {
   const textMutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
   const innerBgClass = theme === 'dark' ? 'bg-[#141624]/40 border-slate-800/50' : 'bg-slate-50 border-slate-200/50';
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
     <div className="h-[calc(100vh-4rem)] p-8 flex flex-col justify-between gap-5 max-w-[1600px] mx-auto overflow-hidden">
       {/* Welcome Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className={`text-3xl font-bold tracking-tight m-0 flex items-center gap-2 ${textTitleClass}`}>
-            Good morning, {user?.name.split(' ')[0] || 'Kavya'} <span className="animate-bounce">👋</span>
+            {getGreeting()}, {user?.name.split(' ')[0] || 'Kavya'} <span className="animate-bounce">👋</span>
           </h1>
           <p className={`${textMutedClass} text-sm mt-1`}>Here's what's happening across your workspace today.</p>
         </div>

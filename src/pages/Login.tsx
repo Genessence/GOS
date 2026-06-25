@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth, UserRole } from '../context/AuthContext';
 import { Sun, Moon, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const [email, setEmail] = useState('kavya.chopra@genessence.com');
   const [password, setPassword] = useState('password123');
   const [role, setRole] = useState<UserRole>('Director');

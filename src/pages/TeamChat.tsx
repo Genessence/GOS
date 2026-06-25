@@ -34,7 +34,7 @@ interface ChatChannel {
 }
 
 export const TeamChat: React.FC = () => {
-  const { theme } = useAuth();
+  const { theme, user } = useAuth();
   const isDark = theme === 'dark';
 
   const [activeChannelId, setActiveChannelId] = useState('c-1');
@@ -119,8 +119,8 @@ export const TeamChat: React.FC = () => {
 
     const newMsg: ChatMessage = {
       id: `m-new-${Date.now()}`,
-      senderName: 'Kavya Chopra',
-      senderAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80',
+      senderName: user?.name || 'Kavya Chopra',
+      senderAvatar: user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80',
       text: messageInput.trim(),
       timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       isWhatsApp: activeChannel.isWhatsApp
@@ -154,10 +154,10 @@ export const TeamChat: React.FC = () => {
 
   return (
     <div className={`flex h-[calc(100vh-4rem)] w-full overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#0c0d14] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
-      
+
       {/* Sidebar Channels List */}
       <div style={{ width: sidebarWidth }} className={`border-r flex flex-col h-full flex-shrink-0 transition-colors ${isDark ? 'bg-[#0f1022] border-slate-800/60' : 'bg-white border-slate-200'}`}>
-        
+
         {/* Search */}
         <div className={`p-4 border-b ${isDark ? 'border-slate-800/60' : 'border-slate-200'}`}>
           <div className={`flex items-center space-x-2 border rounded-xl px-3 py-2 ${isDark ? 'bg-[#141624]/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
@@ -168,7 +168,7 @@ export const TeamChat: React.FC = () => {
 
         {/* Channels/Chats list */}
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
-          
+
           {/* Slack Channels */}
           <div className="space-y-1">
             <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase px-2">Workspace Channels</span>
@@ -178,13 +178,12 @@ export const TeamChat: React.FC = () => {
                 <button
                   key={c.id}
                   onClick={() => setActiveChannelId(c.id)}
-                  className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
+                  className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${isActive
                       ? 'bg-indigo-600 text-white'
                       : isDark
                         ? 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-200'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
-                  }`}
+                    }`}
                 >
                   <Hash className="w-4 h-4 opacity-60 flex-shrink-0" />
                   <span className="truncate">{c.name}</span>
@@ -205,13 +204,12 @@ export const TeamChat: React.FC = () => {
                 <button
                   key={c.id}
                   onClick={() => setActiveChannelId(c.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${isActive
                       ? 'bg-emerald-600 text-white'
                       : isDark
                         ? 'text-slate-400 hover:bg-slate-800/40 hover:text-slate-200'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-2.5 min-w-0">
                     <img src={c.avatar} alt={c.name} className="w-5 h-5 rounded-full object-cover flex-shrink-0" />
@@ -233,16 +231,15 @@ export const TeamChat: React.FC = () => {
       {/* Resize handle */}
       <div
         onMouseDown={onResizeStart}
-        className={`w-1 flex-shrink-0 cursor-col-resize group relative z-20 transition-colors ${
-          isDark ? 'hover:bg-indigo-500/40 hover:bg-slate-800/60' : 'hover:bg-indigo-400/40 hover:bg-slate-200/60'
-        }`}
+        className={`w-1 flex-shrink-0 cursor-col-resize group relative z-20 transition-colors ${isDark ? 'hover:bg-indigo-500/40 hover:bg-slate-800/60' : 'hover:bg-indigo-400/40 hover:bg-slate-200/60'
+          }`}
       >
         <div className="absolute inset-y-0 -left-0.5 -right-0.5 group-hover:bg-indigo-500/20 rounded transition-colors" />
       </div>
 
       {/* Chat Window Panel */}
       <div className="flex-1 flex flex-col h-full min-w-0">
-        
+
         {/* Header */}
         <div className={`h-16 px-6 border-b flex items-center justify-between flex-shrink-0 transition-colors ${isDark ? 'bg-[#0f1022] border-slate-800/60' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center space-x-3 min-w-0">
@@ -284,7 +281,7 @@ export const TeamChat: React.FC = () => {
         {/* Chat Feed */}
         <div className={`flex-1 overflow-y-auto p-6 space-y-4 ${isDark ? 'bg-[#090a12]' : 'bg-slate-50/50'}`}>
           {activeMessages.map((msg) => {
-            const isMe = msg.senderName === 'Kavya Chopra';
+            const isMe = msg.senderName === (user?.name || 'Kavya Chopra');
             return (
               <div key={msg.id} className={`flex items-start gap-3 max-w-[70%] ${isMe ? 'ml-auto flex-row-reverse' : ''}`}>
                 <img src={msg.senderAvatar} alt={msg.senderName} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
@@ -293,15 +290,14 @@ export const TeamChat: React.FC = () => {
                     <span className="text-[10.5px] font-bold text-slate-400">{msg.senderName}</span>
                     <span className="text-[9px] text-slate-500 font-semibold">{msg.timestamp}</span>
                   </div>
-                  <div className={`p-3 rounded-2xl text-xs leading-relaxed ${
-                    isMe
+                  <div className={`p-3 rounded-2xl text-xs leading-relaxed ${isMe
                       ? activeChannel.isWhatsApp
                         ? 'bg-emerald-600 text-white rounded-tr-none'
                         : 'bg-indigo-600 text-white rounded-tr-none'
                       : isDark
                         ? 'bg-[#101220] border border-slate-800/60 text-slate-200 rounded-tl-none'
                         : 'bg-white border border-slate-200 text-slate-700 shadow-xs rounded-tl-none'
-                  }`}>
+                    }`}>
                     <p className="whitespace-pre-line">{msg.text}</p>
                     {isMe && activeChannel.isWhatsApp && (
                       <div className="flex justify-end gap-1 mt-1 opacity-70">
@@ -328,9 +324,8 @@ export const TeamChat: React.FC = () => {
               placeholder={activeChannel.isWhatsApp ? `Send message over WhatsApp to ${activeChannel.name}...` : `Message #${activeChannel.name}`}
               className={`flex-1 bg-transparent border-0 outline-none text-xs placeholder-slate-500 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}
             />
-            <button type="submit" className={`p-2 rounded-lg text-white transition-colors ${
-              activeChannel.isWhatsApp ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-indigo-600 hover:bg-indigo-500'
-            }`}>
+            <button type="submit" className={`p-2 rounded-lg text-white transition-colors ${activeChannel.isWhatsApp ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-indigo-600 hover:bg-indigo-500'
+              }`}>
               <Send className="w-3.5 h-3.5" />
             </button>
           </div>
