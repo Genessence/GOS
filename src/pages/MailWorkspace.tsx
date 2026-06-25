@@ -555,7 +555,7 @@ const ComposeOverlay: React.FC<ComposeProps> = ({ onClose, onMinimize, minimized
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const MailWorkspace: React.FC = () => {
-  const { theme } = useAuth();
+  const { theme, user } = useAuth();
   const isDark = theme === 'dark';
 
   // Theme-aware class helpers
@@ -675,10 +675,10 @@ const MailWorkspace: React.FC = () => {
     if (!to.trim()) return;
     const newEmail: Email = {
       id: Math.random().toString(36).slice(2),
-      sender: "Aarav Rao (You)",
-      senderInitials: "AR",
+      sender: `${user?.name || 'Aarav Rao'} (You)`,
+      senderInitials: user ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AR',
       senderColor: "#3b82f6",
-      senderEmail: "aarav.rao@genessence.com",
+      senderEmail: user?.email || "aarav.rao@genessence.com",
       subject: subject || "(No Subject)",
       snippet: body.slice(0, 80) + "...",
       bodyLines: [body],
@@ -741,10 +741,14 @@ const MailWorkspace: React.FC = () => {
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
           </button>
           <div className={`flex items-center space-x-2 pl-2 border-l ml-1 ${tw.divider}`}>
-            <Avatar initials="AR" color="#3b82f6" size="sm" />
+            {user?.avatar ? (
+              <img src={user.avatar} alt={user.name} className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+            ) : (
+              <Avatar initials={user ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'AR'} color="#3b82f6" size="sm" />
+            )}
             <div className="leading-tight">
-              <div className={`text-xs font-semibold ${tw.text}`}>Aarav Rao</div>
-              <div className={`text-[10px] ${tw.textMuted}`}>Engineer</div>
+              <div className={`text-xs font-semibold ${tw.text}`}>{user?.name || 'Aarav Rao'}</div>
+              <div className={`text-[10px] ${tw.textMuted}`}>{user?.role || 'Engineer'}</div>
             </div>
             <ChevronDown className={`w-4 h-4 ${tw.textMuted}`} />
           </div>
@@ -1149,8 +1153,8 @@ const MailWorkspace: React.FC = () => {
                         </div>
                         <div className={`text-xs mt-2 ml-10 ${tw.textDim}`}>
                           -- <br />
-                          <span className="text-blue-400 font-medium">Aarav Rao</span>
-                          <br />Software Engineer<br />Genessence Solutions
+                          <span className="text-blue-400 font-medium">{user?.name || 'Aarav Rao'}</span>
+                          <br />{user?.role || 'Software Engineer'}<br />Genessence Solutions
                         </div>
                       </div>
                       {/* Reply toolbar */}

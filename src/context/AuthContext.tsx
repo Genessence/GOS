@@ -30,19 +30,22 @@ const DEFAULT_AVATARS: Record<UserRole, string> = {
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    // Initial mock login as Kavya (Director) to matching the mockup screenshot
-    return {
-      id: 'usr-1',
-      name: 'Kavya Chopra',
-      email: 'kavya.chopra@genessence.com',
-      role: 'Director',
-      avatar: DEFAULT_AVATARS['Director'],
-    };
+    const saved = localStorage.getItem('gos_user');
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     return (localStorage.getItem('gos_theme') as 'dark' | 'light') || 'dark';
   });
+
+  // Sync user state to localStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('gos_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('gos_user');
+    }
+  }, [user]);
 
   // Sync Tailwind's class-based dark mode to the <html> element
   // Tailwind darkMode:'class' requires the 'dark' class on document.documentElement
@@ -56,7 +59,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [theme]);
 
   const toggleTheme = () => {
+    document.documentElement.classList.add('theme-transition');
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition');
+    }, 150);
   };
 
   const login = async (email: string, role: UserRole): Promise<boolean> => {

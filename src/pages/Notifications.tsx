@@ -110,21 +110,20 @@ export const Notifications: React.FC = () => {
 
   return (
     <div className={`p-8 flex flex-col h-[calc(100vh-4rem)] w-full overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#0c0d14] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
-      
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6 flex-shrink-0">
         <div>
           <h1 className={`text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-800'}`}>Notifications</h1>
           <p className="text-xs text-slate-500 font-semibold mt-1">Review activity, pipeline statuses, and leave alerts across the system.</p>
         </div>
-        
+
         {notifications.length > 0 && (
           <div className="flex items-center gap-2">
             <button
               onClick={handleMarkAllRead}
-              className={`flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs font-semibold transition-colors ${
-                isDark ? 'border-slate-800 hover:bg-slate-800/40 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-600 shadow-sm'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-2 border rounded-xl text-xs font-semibold transition-colors ${isDark ? 'border-slate-800 hover:bg-slate-800/40 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-600 shadow-sm'
+                }`}
             >
               <Check className="w-3.5 h-3.5" />
               Mark all read
@@ -143,11 +142,11 @@ export const Notifications: React.FC = () => {
       {/* Notifications list */}
       <div className={`border rounded-2xl flex-1 overflow-y-auto ${isDark ? 'bg-[#0f1022] border-slate-800/60' : 'bg-white border-slate-200'}`}>
         <div className="divide-y divide-slate-800/40">
-          
+
           {notifications.map(n => (
             <div key={n.id} className={`p-5 flex items-start justify-between gap-4 hover:bg-slate-800/5 transition-colors ${!n.read ? (isDark ? 'bg-[#141624]/20' : 'bg-indigo-500/5') : ''}`}>
               <div className="flex items-start gap-4">
-                
+
                 {/* Category Icon */}
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center relative ${isDark ? 'bg-slate-900' : 'bg-slate-100'}`}>
                   {getIcon(n.type)}

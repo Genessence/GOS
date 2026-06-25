@@ -554,11 +554,10 @@ const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave
                         setSelectedAttendees(p => [...p, { name: member.name, email: member.email, avatar: member.avatar, responseStatus: 'accepted' }]);
                       }
                     }}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                      isSelected
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${isSelected
                         ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-400'
                         : 'border-slate-800 bg-[#0c0d14] text-slate-400 hover:border-slate-700 hover:text-slate-200'
-                    }`}
+                      }`}
                   >
                     <img src={member.avatar} alt={member.name} className="w-4 h-4 rounded-full object-cover" />
                     <span>{member.name.split(' ')[0]}</span>
@@ -828,7 +827,7 @@ export const CalendarWorkspace: React.FC = () => {
     const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const monday = new Date(current);
     monday.setDate(current.getDate() + distanceToMonday);
-    
+
     const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
     return dayNames.map((name, i) => {
       const d = new Date(monday);
@@ -850,23 +849,23 @@ export const CalendarWorkspace: React.FC = () => {
     const current = new Date();
     const year = current.getFullYear();
     const month = current.getMonth();
-    
+
     const firstDayOfMonth = new Date(year, month, 1);
     const dayOfWeek = firstDayOfMonth.getDay();
     const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const startMonday = new Date(firstDayOfMonth);
     startMonday.setDate(firstDayOfMonth.getDate() + distanceToMonday);
-    
+
     const weeks = [];
     for (let w = 0; w < 5; w++) {
       const week = [];
       for (let d = 0; d < 5; d++) {
         const date = new Date(startMonday);
         date.setDate(startMonday.getDate() + w * 7 + d);
-        
+
         const isCurrentMonth = date.getMonth() === month;
         const isToday = date.getDate() === current.getDate() && date.getMonth() === current.getMonth() && date.getFullYear() === current.getFullYear();
-        
+
         week.push({
           num: date.getDate(),
           month: isCurrentMonth,
@@ -990,7 +989,7 @@ export const CalendarWorkspace: React.FC = () => {
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
             </div>
-            
+
             <button
               onClick={() => {
                 const attendeesList = m.attendees.map(a => a.name.split(' ')[0]).join(', ');
@@ -998,11 +997,10 @@ export const CalendarWorkspace: React.FC = () => {
                 localStorage.setItem('gos_pending_chat_msg', shareText);
                 navigate('/workspace/chat');
               }}
-              className={`w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-[11px] font-bold transition-all ${
-                isDark
+              className={`w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-[11px] font-bold transition-all ${isDark
                   ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20'
                   : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
-              }`}
+                }`}
             >
               <Send className="w-3 h-3" />
               Share to Team Chat
