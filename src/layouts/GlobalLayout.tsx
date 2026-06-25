@@ -57,13 +57,16 @@ export const GlobalLayout: React.FC = () => {
       items: [
         { name: 'Mail Workspace', path: '/workspace/mail', icon: <Mail className="w-5 h-5" /> },
         { name: 'Calendar & MoM', path: '/workspace/calendar', icon: <Calendar className="w-5 h-5" /> },
+        { name: 'Projects Overview', path: '/projects/overview', icon: <BarChart4 className="w-5 h-5" /> },
         { name: 'Kanban Boards', path: '/projects', icon: <Kanban className="w-5 h-5" /> },
+        { name: 'Team Chat', path: '/workspace/chat', icon: <MessageSquare className="w-5 h-5" /> },
       ]
     },
     {
       title: 'PEOPLE & CULTURE',
       items: [
         { name: 'HR & People', path: '/team', icon: <Users className="w-5 h-5" />, roles: ['Director', 'Project Lead'] },
+        { name: 'Pending Reviews', path: '/workspace/reviews', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['Director', 'Project Lead'] },
         { name: 'Timesheets', path: '/team/timesheets', icon: <Clock className="w-5 h-5" /> },
         { name: 'Leave Management', path: '/team/leaves', icon: <FileText className="w-5 h-5" /> },
         { name: 'Performance', path: '/team/kpis', icon: <ShieldAlert className="w-5 h-5" />, roles: ['Director', 'Project Lead'] }
@@ -72,7 +75,7 @@ export const GlobalLayout: React.FC = () => {
     {
       title: 'SYSTEM',
       items: [
-        { name: 'Integrations', path: '/integrations', icon: <Layers className="w-5 h-5" /> },
+        { name: 'Notifications', path: '/notifications', icon: <Bell className="w-5 h-5" /> },
         { name: 'Settings', path: '/settings', icon: <Settings className="w-5 h-5" /> }
       ]
     }
@@ -170,6 +173,7 @@ export const GlobalLayout: React.FC = () => {
                     <NavLink
                       key={itemIdx}
                       to={item.path}
+                      end
                       className={({ isActive }) =>
                         `flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group ${isActive
                           ? 'bg-indigo-600/10 text-indigo-500 border border-indigo-500/20'
@@ -190,23 +194,9 @@ export const GlobalLayout: React.FC = () => {
           </nav>
         </div>
 
-        {/* Footer Area - App Promo & User Profile */}
-        <div className={`p-4 border-t space-y-4 ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
+        {/* Footer Area - User Profile */}
+        <div className={`p-4 border-t ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
           }`}>
-          {/* Mobile App Download Card (matching mockups) */}
-          {!collapsed && (
-            <div className={`p-4 rounded-2xl border relative overflow-hidden ${theme === 'dark' ? 'bg-gradient-to-br from-[#131526] to-[#1e1438] border-slate-800/40' : 'bg-slate-50 border-slate-200/80'
-              }`}>
-              <div className="absolute -right-6 -bottom-6 opacity-10">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm-5 20c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm5.25-3H6.75V6h10.5v12z" /></svg>
-              </div>
-              <h4 className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-slate-800'}`}>G-OS Mobile App</h4>
-              <p className="text-[10px] text-slate-450 mt-1">Stay connected on the go.</p>
-              <button className="w-full mt-3 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold py-2 rounded-xl transition-all cursor-pointer">
-                Download App
-              </button>
-            </div>
-          )}
 
           {/* User Profile and Switchable Roles Dropdown */}
           <div className="relative">
@@ -298,7 +288,10 @@ export const GlobalLayout: React.FC = () => {
           {/* Right Header items */}
           <div className="flex items-center space-x-3">
             {/* Quick action button */}
-            <button className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-all shadow-md shadow-indigo-600/15 cursor-pointer">
+            <button
+              onClick={() => navigate('/workspace/calendar')}
+              className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-all shadow-md shadow-indigo-600/15 cursor-pointer"
+            >
               <Plus className="w-3.5 h-3.5" />
               <span>Create MoM</span>
             </button>
@@ -314,14 +307,14 @@ export const GlobalLayout: React.FC = () => {
             </button>
 
             {/* Notifications */}
-            <button className={`p-2 rounded-xl relative transition-all ${theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
+            <button onClick={() => navigate('/notifications')} className={`p-2 rounded-xl relative transition-all ${theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
               }`}>
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 border border-[#0c0d14]" />
             </button>
 
             {/* Conversations / Help */}
-            <button className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
+            <button onClick={() => navigate('/workspace/chat')} className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'hover:bg-slate-800/30 text-slate-400 hover:text-white' : 'hover:bg-slate-100 text-slate-500 hover:text-slate-800'
               }`}>
               <MessageSquare className="w-4 h-4" />
             </button>
@@ -333,7 +326,7 @@ export const GlobalLayout: React.FC = () => {
             <div className={`flex items-center space-x-2 border px-3 py-1.5 rounded-xl ${theme === 'dark' ? 'bg-[#141624]/60 border-slate-800' : 'bg-slate-50 border-slate-200'
               }`}>
               <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-              <span className={`text-[10px] font-semibold tracking-wider uppercase ${theme === 'dark' ? 'text-slate-300' : 'text-slate-655'
+              <span className={`text-[10px] font-semibold tracking-wider uppercase ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'
                 }`}>
                 {user.role} mode
               </span>

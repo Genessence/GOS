@@ -40,11 +40,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   });
 
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('gos_theme') as 'dark' | 'light') || 'dark';
+  });
 
   // Sync Tailwind's class-based dark mode to the <html> element
   // Tailwind darkMode:'class' requires the 'dark' class on document.documentElement
   useEffect(() => {
+    localStorage.setItem('gos_theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {

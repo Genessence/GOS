@@ -38,6 +38,14 @@ export const Login: React.FC = () => {
     }
   };
 
+  const getFirstNameFromEmail = (emailStr: string) => {
+    if (!emailStr) return 'Kavya';
+    const localPart = emailStr.split('@')[0];
+    if (!localPart) return 'Kavya';
+    const firstPart = localPart.split('.')[0] || localPart;
+    return firstPart.charAt(0).toUpperCase() + firstPart.slice(1);
+  };
+
   return (
     <div className={`flex flex-col md:flex-row min-h-screen w-screen overflow-x-hidden font-sans ${
       isDark ? 'bg-[#0f111a] text-slate-100' : 'bg-slate-50 text-slate-900'
@@ -183,7 +191,7 @@ export const Login: React.FC = () => {
             className={`p-2 rounded-xl border transition-all ${
               isDark 
                 ? 'border-slate-800 bg-slate-900/50 hover:bg-slate-900 text-slate-300' 
-                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-650'
+                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600'
             }`}
           >
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -197,7 +205,7 @@ export const Login: React.FC = () => {
               Welcome back,
             </h2>
             <h2 className="text-3xl md:text-4xl font-bold text-[#6D4AFF] mt-1.5 m-0">
-              Kavya 👋
+              {getFirstNameFromEmail(email)} 👋
             </h2>
             <p className={`mt-2.5 text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               Sign in to continue to your G-OS workspace

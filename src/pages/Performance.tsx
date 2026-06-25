@@ -64,7 +64,7 @@ export const Performance: React.FC = () => {
           { title: "Task Completion", val: `${performanceKPIs.completion}%`, sub: "12 of 13 cards closed", icon: <CheckCircle className="w-5 h-5 text-emerald-400" /> },
           { title: "Team Ranking", val: `#${performanceKPIs.ranking}`, sub: "Top 10 percentile", icon: <Sparkles className="w-5 h-5 text-indigo-400" /> }
         ].map((card, idx) => (
-          <div key={idx} className={`p-4.5 rounded-2xl border flex items-center justify-between transition-all ${
+          <div key={idx} className={`p-4 sm:p-5 rounded-2xl border flex items-center justify-between transition-all ${
             isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
           }`}>
             <div>
@@ -86,8 +86,8 @@ export const Performance: React.FC = () => {
         <div className={`lg:col-span-2 p-6 rounded-2xl border flex flex-col justify-between ${
           isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
         }`}>
-          <div className="border-b border-slate-850 pb-4 mb-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Performance Trend Graph</h3>
+          <div className={`border-b pb-4 mb-4 ${isDark ? 'border-slate-800/60' : 'border-slate-200'}`}>
+            <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-800'} uppercase tracking-wider`}>Performance Trend Graph</h3>
             <p className="text-[10px] text-slate-400 mt-1">Monthly performance progression score chart</p>
           </div>
 
@@ -146,48 +146,52 @@ export const Performance: React.FC = () => {
         <div className={`p-6 rounded-2xl border flex flex-col ${
           isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
         }`}>
-          <div className="border-b border-slate-850 pb-4 mb-4">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">Metrics Overview</h3>
+          <div className={`border-b pb-4 mb-4 ${isDark ? 'border-slate-800/60' : 'border-slate-200'}`}>
+            <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-800'} uppercase tracking-wider`}>Metrics Overview</h3>
             <p className="text-[10px] text-slate-400 mt-1">Detailed metric breakdowns</p>
           </div>
 
           <div className="flex-1 flex flex-col justify-around py-2 gap-4">
             {/* Task Completion Gauge */}
-            <div className="flex items-center space-x-4 p-4 rounded-xl bg-slate-900/15 border border-slate-800/30">
+            <div className={`flex items-center space-x-4 p-4 rounded-xl border ${
+              isDark ? 'bg-slate-900/15 border-slate-800/30' : 'bg-slate-50 border-slate-200'
+            }`}>
               {/* Circular Ring SVG */}
               <div className="relative w-14 h-14 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="28" cy="28" r="24" stroke="#1e293b" strokeWidth="4.5" fill="transparent" />
+                  <circle cx="28" cy="28" r="24" stroke={isDark ? '#1e293b' : '#e2e8f0'} strokeWidth="4.5" fill="transparent" />
                   <circle cx="28" cy="28" r="24" stroke="#34d399" strokeWidth="4.5" fill="transparent" 
                     strokeDasharray={2 * Math.PI * 24}
                     strokeDashoffset={2 * Math.PI * 24 * (1 - 0.92)}
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="absolute text-[10px] font-bold font-mono text-emerald-400">92%</span>
+                <span className={`absolute text-[10px] font-bold font-mono ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>92%</span>
               </div>
               <div>
                 <h4 className="text-xs font-semibold">Task Completion %</h4>
-                <p className="text-[10px] text-slate-405 font-medium mt-0.5">Completed: 92% | Pending: 8%</p>
+                <p className="text-[10px] text-slate-400 font-medium mt-0.5">Completed: 92% | Pending: 8%</p>
               </div>
             </div>
 
             {/* Attendance Score Gauge */}
-            <div className="flex items-center space-x-4 p-4 rounded-xl bg-slate-900/15 border border-slate-800/30">
+            <div className={`flex items-center space-x-4 p-4 rounded-xl border ${
+              isDark ? 'bg-slate-900/15 border-slate-800/30' : 'bg-slate-50 border-slate-200'
+            }`}>
               <div className="relative w-14 h-14 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="28" cy="28" r="24" stroke="#1e293b" strokeWidth="4.5" fill="transparent" />
+                  <circle cx="28" cy="28" r="24" stroke={isDark ? '#1e293b' : '#e2e8f0'} strokeWidth="4.5" fill="transparent" />
                   <circle cx="28" cy="28" r="24" stroke="#818cf8" strokeWidth="4.5" fill="transparent" 
                     strokeDasharray={2 * Math.PI * 24}
                     strokeDashoffset={2 * Math.PI * 24 * (1 - 0.98)}
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="absolute text-[10px] font-bold font-mono text-indigo-400">98%</span>
+                <span className={`absolute text-[10px] font-bold font-mono ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>98%</span>
               </div>
               <div>
                 <h4 className="text-xs font-semibold">Attendance Rate</h4>
-                <p className="text-[10px] text-slate-405 font-medium mt-0.5">Current Rate: 98% (Target: 95%)</p>
+                <p className="text-[10px] text-slate-400 font-medium mt-0.5">Current Rate: 98% (Target: 95%)</p>
               </div>
             </div>
           </div>
@@ -202,19 +206,23 @@ export const Performance: React.FC = () => {
         <div className={`p-6 rounded-2xl border flex flex-col ${
           isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
         }`}>
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-850 pb-3 mb-4 flex items-center space-x-2">
+          <h3 className={`text-xs font-bold uppercase tracking-wider border-b pb-3 mb-4 flex items-center space-x-2 ${
+            isDark ? 'text-white border-slate-800/60' : 'text-slate-800 border-slate-200'
+          }`}>
             <Target className="w-4 h-4 text-indigo-400" />
             <span>Goals & OKRs</span>
           </h3>
 
           <div className="space-y-4 flex-1">
             {okrs.map((okr, idx) => (
-              <div key={idx} className="space-y-2 p-3 rounded-xl bg-[#141624]/40 border border-slate-800/40">
+              <div key={idx} className={`space-y-2 p-3 rounded-xl border ${
+                isDark ? 'bg-[#141624]/40 border-slate-800/40' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-250 truncate pr-2">{okr.goal}</span>
+                  <span className={`font-semibold truncate pr-2 ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{okr.goal}</span>
                   <span className="font-mono font-bold text-indigo-400">{okr.progress}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                <div className={`w-full h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-900' : 'bg-slate-200'}`}>
                   <div className="h-full bg-indigo-500" style={{ width: `${okr.progress}%` }} />
                 </div>
                 <div className="flex justify-between text-[9px] text-slate-500 font-bold mt-1">
@@ -230,19 +238,23 @@ export const Performance: React.FC = () => {
         <div className={`p-6 rounded-2xl border flex flex-col justify-between ${
           isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
         }`}>
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-850 pb-3 mb-4 flex items-center space-x-2">
+          <h3 className={`text-xs font-bold uppercase tracking-wider border-b pb-3 mb-4 flex items-center space-x-2 ${
+            isDark ? 'text-white border-slate-800/60' : 'text-slate-800 border-slate-200'
+          }`}>
             <BookOpen className="w-4 h-4 text-indigo-400" />
             <span>Monthly Performance Report</span>
           </h3>
           
-          <div className="flex-1 p-4 rounded-xl bg-slate-900/10 border border-slate-800/30 border-l-4 border-l-indigo-500 relative flex flex-col justify-center leading-relaxed">
+          <div className={`flex-1 p-4 rounded-xl border-l-4 border-l-indigo-500 relative flex flex-col justify-center leading-relaxed ${
+            isDark ? 'bg-slate-900/10 border-slate-800/30' : 'bg-slate-50 border-slate-200'
+          }`}>
             <span className="text-3xl text-indigo-500/20 absolute top-2 left-2 font-serif">“</span>
-            <p className="text-xs text-slate-300 italic font-medium relative z-10 pl-2">
+            <p className={`text-xs italic font-medium relative z-10 pl-2 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
               Excellent work on dashboard development. Commendable velocity and attention to detail during the calendar integration phase. Keep up the high standard.
             </p>
             <div className="mt-4 pl-2 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold text-white block">Ankit Sharma</span>
+                <span className={`text-[10px] font-bold block ${isDark ? 'text-white' : 'text-slate-800'}`}>Ankit Sharma</span>
                 <span className="text-[9px] text-slate-500 font-semibold block uppercase">Project Lead</span>
               </div>
               <span className="text-[9px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded font-bold uppercase">June 2026</span>
@@ -254,7 +266,9 @@ export const Performance: React.FC = () => {
         <div className={`p-6 rounded-2xl border flex flex-col ${
           isDark ? 'bg-[#101220] border-slate-800/60' : 'bg-white border-slate-200/80 shadow-sm'
         }`}>
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-slate-850 pb-3 mb-4 flex items-center space-x-2">
+          <h3 className={`text-xs font-bold uppercase tracking-wider border-b pb-3 mb-4 flex items-center space-x-2 ${
+            isDark ? 'text-white border-slate-800/60' : 'text-slate-800 border-slate-200'
+          }`}>
             <Award className="w-4 h-4 text-indigo-400" />
             <span>Achievements & Badges</span>
           </h3>
@@ -267,11 +281,13 @@ export const Performance: React.FC = () => {
               >
                 <div className="flex items-center justify-between w-full">
                   <span className="text-2xl">{badge.icon}</span>
-                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-md bg-white/5 uppercase tracking-wide opacity-80">{badge.date}</span>
+                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide opacity-80 ${
+                    isDark ? 'bg-white/5 text-slate-300' : 'bg-slate-900/5 text-slate-600'
+                  }`}>{badge.date}</span>
                 </div>
                 <div className="mt-2.5">
-                  <h4 className="text-[10px] font-bold text-white tracking-tight">{badge.title}</h4>
-                  <p className="text-[8px] text-slate-400 leading-normal mt-0.5 line-clamp-2">{badge.desc}</p>
+                  <h4 className={`text-[10px] font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-800'}`}>{badge.title}</h4>
+                  <p className={`text-[8px] leading-normal mt-0.5 line-clamp-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{badge.desc}</p>
                 </div>
               </div>
             ))}

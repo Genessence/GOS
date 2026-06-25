@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -36,6 +36,7 @@ import {
   Bell
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // ─────────────────────────────────────────────
 // Types & Interfaces (integration-ready)
@@ -121,18 +122,18 @@ const GRID_START_HOUR = 8;
 const GRID_END_HOUR = 19;
 const HOUR_ROWS = Array.from({ length: GRID_END_HOUR - GRID_START_HOUR + 1 }, (_, i) => i + GRID_START_HOUR);
 
-const MEETING_TYPE_STYLES_DARK: Record<MeetingType, { bg: string; border: string; text: string; badge: string; dot: string; label: string }> = {
-  'one-one': { bg: 'bg-emerald-950/30', border: 'border-l-[3px] border-emerald-500', text: 'text-emerald-300', badge: 'bg-emerald-900/40 text-emerald-300', dot: 'bg-emerald-500', label: '1:1' },
-  'sprint-ceremony': { bg: 'bg-indigo-950/30', border: 'border-l-[3px] border-indigo-500', text: 'text-indigo-300', badge: 'bg-indigo-900/40 text-indigo-300', dot: 'bg-indigo-500', label: 'Sprint' },
-  'client-facing': { bg: 'bg-amber-950/30', border: 'border-l-[3px] border-amber-500', text: 'text-amber-300', badge: 'bg-amber-900/40 text-amber-300', dot: 'bg-amber-500', label: 'Client' },
-  'internal': { bg: 'bg-purple-950/30', border: 'border-l-[3px] border-purple-500', text: 'text-purple-300', badge: 'bg-purple-900/40 text-purple-300', dot: 'bg-purple-500', label: 'Internal' },
+const MEETING_TYPE_STYLES_DARK: Record<MeetingType, { bg: string; border: string; text: string; badge: string; dot: string; label: string; color: string }> = {
+  'one-one': { bg: 'bg-[#0e2a22] border border-emerald-800/60', border: 'border-l-[4px] border-l-emerald-500', text: 'text-emerald-250', badge: 'bg-emerald-900/40 text-emerald-300', dot: 'bg-emerald-500', label: '1:1', color: '#10b981' },
+  'sprint-ceremony': { bg: 'bg-[#181d3f] border border-indigo-800/60', border: 'border-l-[4px] border-l-indigo-500', text: 'text-indigo-250', badge: 'bg-indigo-900/40 text-indigo-300', dot: 'bg-indigo-500', label: 'Sprint', color: '#6366f1' },
+  'client-facing': { bg: 'bg-[#2d2218] border border-amber-800/60', border: 'border-l-[4px] border-l-amber-500', text: 'text-amber-250', badge: 'bg-amber-900/40 text-amber-300', dot: 'bg-amber-500', label: 'Client', color: '#f59e0b' },
+  'internal': { bg: 'bg-[#241a38] border border-purple-800/60', border: 'border-l-[4px] border-l-purple-500', text: 'text-purple-250', badge: 'bg-purple-900/40 text-purple-300', dot: 'bg-purple-500', label: 'Internal', color: '#a855f7' },
 };
 
-const MEETING_TYPE_STYLES_LIGHT: Record<MeetingType, { bg: string; border: string; text: string; badge: string; dot: string; label: string }> = {
-  'one-one': { bg: 'bg-emerald-50', border: 'border-l-[3px] border-emerald-500', text: 'text-emerald-700', badge: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500', label: '1:1' },
-  'sprint-ceremony': { bg: 'bg-indigo-50', border: 'border-l-[3px] border-indigo-500', text: 'text-indigo-700', badge: 'bg-indigo-100 text-indigo-700', dot: 'bg-indigo-500', label: 'Sprint' },
-  'client-facing': { bg: 'bg-amber-50', border: 'border-l-[3px] border-amber-500', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-700', dot: 'bg-amber-500', label: 'Client' },
-  'internal': { bg: 'bg-purple-50', border: 'border-l-[3px] border-purple-500', text: 'text-purple-700', badge: 'bg-purple-100 text-purple-700', dot: 'bg-purple-500', label: 'Internal' },
+const MEETING_TYPE_STYLES_LIGHT: Record<MeetingType, { bg: string; border: string; text: string; badge: string; dot: string; label: string; color: string }> = {
+  'one-one': { bg: 'bg-emerald-50 border border-emerald-200', border: 'border-l-[4px] border-l-emerald-600', text: 'text-emerald-900 font-bold', badge: 'bg-emerald-200 text-emerald-950 font-semibold', dot: 'bg-emerald-600', label: '1:1', color: '#059669' },
+  'sprint-ceremony': { bg: 'bg-indigo-50 border border-indigo-200', border: 'border-l-[4px] border-l-indigo-600', text: 'text-indigo-950 font-bold', badge: 'bg-indigo-200 text-indigo-950 font-semibold', dot: 'bg-indigo-600', label: 'Sprint', color: '#4f46e5' },
+  'client-facing': { bg: 'bg-amber-50 border border-amber-200', border: 'border-l-[4px] border-l-amber-600', text: 'text-amber-950 font-bold', badge: 'bg-amber-200 text-amber-950 font-semibold', dot: 'bg-amber-600', label: 'Client', color: '#d97706' },
+  'internal': { bg: 'bg-purple-50 border border-purple-200', border: 'border-l-[4px] border-l-purple-600', text: 'text-purple-950 font-bold', badge: 'bg-purple-200 text-purple-950 font-semibold', dot: 'bg-purple-600', label: 'Internal', color: '#9333ea' },
 };
 
 // ─────────────────────────────────────────────
@@ -403,12 +404,14 @@ function formatHourLabel(hour: number): string {
 
 interface CreateMeetingModalProps {
   onClose: () => void;
-  onSave: (m: Meeting) => void;
+  onSave: (meeting: Meeting) => void;
+  teamMembers: Array<{ name: string; email: string; avatar: string }>;
+  dayHeaders: any[];
 }
 
-const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave }) => {
+const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave, teamMembers, dayHeaders }) => {
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState('2026-05-20');
+  const [date, setDate] = useState(() => dayHeaders[2]?.dateString || '2026-05-20');
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('10:00');
   const [type, setType] = useState<MeetingType>('internal');
@@ -418,17 +421,13 @@ const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave
   const [autoMeet, setAutoMeet] = useState(true);
   const [agendaInput, setAgendaInput] = useState('');
   const [agendaItems, setAgendaItems] = useState<string[]>([]);
+  const [selectedAttendees, setSelectedAttendees] = useState<Attendee[]>([]);
 
   const addAgenda = () => {
     if (agendaInput.trim()) {
       setAgendaItems(p => [...p, agendaInput.trim()]);
       setAgendaInput('');
     }
-  };
-
-  const dayNames = ['Mon May 19', 'Tue May 20', 'Wed May 21', 'Thu May 22', 'Fri May 23'];
-  const dayIndexFromDate: Record<string, number> = {
-    '2026-05-19': 0, '2026-05-20': 1, '2026-05-21': 2, '2026-05-22': 3, '2026-05-23': 4
   };
 
   const handleSave = () => {
@@ -439,19 +438,20 @@ const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave
     };
     const sh = parseHour(startTime);
     const eh = parseHour(endTime);
-    const dIdx = dayIndexFromDate[date] ?? 1;
+    const dIdx = dayHeaders.findIndex(d => d.dateString === date);
+    const resolvedIdx = dIdx !== -1 ? dIdx : 2;
     const [sh12, em12] = [
       sh < 12 ? `${Math.floor(sh)}:${String(Math.round((sh % 1) * 60)).padStart(2, '0')} AM` : `${Math.floor(sh) - 12 || 12}:${String(Math.round((sh % 1) * 60)).padStart(2, '0')} PM`,
       eh < 12 ? `${Math.floor(eh)}:${String(Math.round((eh % 1) * 60)).padStart(2, '0')} AM` : `${Math.floor(eh) - 12 || 12}:${String(Math.round((eh % 1) * 60)).padStart(2, '0')} PM`,
     ];
     const newMeeting: Meeting = {
       id: `m-${Date.now()}`,
-      title, description, date, dayIndex: dIdx,
+      title, description, date, dayIndex: resolvedIdx,
       timeLabel: `${sh12} – ${em12}`, startHour: sh, endHour: Math.max(eh, sh + 0.5),
       timezone: 'Asia/Kolkata', type, project, projectId: undefined,
       meetLink: autoMeet ? `meet.google.com/new-${Math.random().toString(36).slice(2, 9)}` : meetLink,
       status: 'scheduled',
-      attendees: [],
+      attendees: selectedAttendees,
       agenda: agendaItems.map((text, i) => ({ id: `ag-new-${i}`, text, done: false })),
       transcriptStatus: 'unavailable', transcript: [],
       momStatus: 'not-generated', discussionPoints: [], decisions: [], actionItems: [],
@@ -485,8 +485,8 @@ const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
               <select value={date} onChange={e => setDate(e.target.value)} className="w-full bg-[#141624] border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white outline-none focus:border-indigo-500">
-                {Object.entries(dayIndexFromDate).map(([d, idx]) => (
-                  <option key={d} value={d}>{dayNames[idx]}</option>
+                {dayHeaders.map((day) => (
+                  <option key={day.dateString} value={day.dateString}>{day.name} {day.monthName} {day.num}</option>
                 ))}
               </select>
             </div>
@@ -534,6 +534,41 @@ const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave
             )}
           </div>
 
+          {/* Invite Attendees */}
+          <div>
+            <div className="flex justify-between items-baseline mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Invite Attendees</label>
+              <span className="text-[9px] text-slate-500 font-semibold">Invited members will see this on their dashboards</span>
+            </div>
+            <div className="flex flex-wrap gap-2 p-3 bg-[#141624]/60 border border-slate-800 rounded-xl">
+              {teamMembers.map(member => {
+                const isSelected = selectedAttendees.some(a => a.email === member.email);
+                return (
+                  <button
+                    key={member.email}
+                    type="button"
+                    onClick={() => {
+                      if (isSelected) {
+                        setSelectedAttendees(p => p.filter(a => a.email !== member.email));
+                      } else {
+                        setSelectedAttendees(p => [...p, { name: member.name, email: member.email, avatar: member.avatar, responseStatus: 'accepted' }]);
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                      isSelected
+                        ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-400'
+                        : 'border-slate-800 bg-[#0c0d14] text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                    }`}
+                  >
+                    <img src={member.avatar} alt={member.name} className="w-4 h-4 rounded-full object-cover" />
+                    <span>{member.name.split(' ')[0]}</span>
+                    {isSelected ? <Check className="w-3 h-3 text-indigo-400" /> : <Plus className="w-3 h-3 opacity-60" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Description */}
           <div>
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Description</label>
@@ -576,16 +611,46 @@ const CreateMeetingModal: React.FC<CreateMeetingModalProps> = ({ onClose, onSave
 
 export const CalendarWorkspace: React.FC = () => {
   const { theme } = useAuth();
+  const navigate = useNavigate();
 
   const [currentView, setCurrentView] = useState<'day' | 'week' | 'month'>('week');
-  const [activeDayIndex, setActiveDayIndex] = useState(1);
-  const [selectedMeetingId, setSelectedMeetingId] = useState('m-6');
+  const [activeDayIndex, setActiveDayIndex] = useState(() => {
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    return currentDay >= 1 && currentDay <= 5 ? currentDay - 1 : 2; // Wed default
+  });
+  const [selectedMeetingId, setSelectedMeetingId] = useState(() => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const defaultDayIdx = currentDay >= 1 && currentDay <= 5 ? currentDay - 1 : 2;
+    const initialMeet = SEED_MEETINGS.find(m => m.dayIndex === defaultDayIdx) || SEED_MEETINGS[0];
+    return initialMeet.id;
+  });
   const [sidebarTab, setSidebarTab] = useState<'agenda' | 'transcript' | 'mom'>('mom');
   const [copied, setCopied] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [editingMomSection, setEditingMomSection] = useState<'points' | 'decisions' | null>(null);
-  const [meetings, setMeetings] = useState<Meeting[]>(SEED_MEETINGS);
+  const [meetings, setMeetings] = useState<Meeting[]>(() => {
+    try {
+      const stored = localStorage.getItem('gos_meetings');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return SEED_MEETINGS;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('gos_meetings', JSON.stringify(meetings));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [meetings]);
 
   const isDark = theme === 'dark';
 
@@ -626,16 +691,16 @@ export const CalendarWorkspace: React.FC = () => {
     innerBg: isDark ? 'bg-[#141624]/50' : 'bg-slate-50',
     innerBg2: isDark ? 'bg-[#141624]' : 'bg-slate-100',
     gridBg: isDark ? 'bg-[#090a12]' : 'bg-white',
-    border: isDark ? 'border-slate-800/60' : 'border-slate-200',
-    borderDim: isDark ? 'border-slate-800/40' : 'border-slate-100',
-    borderLine: isDark ? 'border-slate-900/80' : 'border-slate-100',
+    border: isDark ? 'border-slate-800/60' : 'border-slate-300',
+    borderDim: isDark ? 'border-slate-800/40' : 'border-slate-300/70',
+    borderLine: isDark ? 'border-slate-900/80' : 'border-slate-300',
     text: isDark ? 'text-white' : 'text-slate-900',
     textMuted: isDark ? 'text-slate-400' : 'text-slate-500',
-    textDim: isDark ? 'text-slate-500' : 'text-slate-400',
-    textFaint: isDark ? 'text-slate-600' : 'text-slate-400',
+    textDim: isDark ? 'text-slate-500' : 'text-slate-600',
+    textFaint: isDark ? 'text-slate-600' : 'text-slate-500',
     hover: isDark ? 'hover:bg-slate-800/10' : 'hover:bg-slate-50',
     hoverDark: isDark ? 'hover:bg-slate-800/20' : 'hover:bg-slate-100',
-    tabInactive: isDark ? 'border-transparent text-slate-500 hover:text-slate-300' : 'border-transparent text-slate-400 hover:text-slate-700',
+    tabInactive: isDark ? 'border-transparent text-slate-500 hover:text-slate-300' : 'border-transparent text-slate-500 hover:text-slate-800',
     statusEnded: isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500',
     fetchBtn: isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700',
     transcriptLine: isDark ? 'bg-[#141624] border-slate-800/50' : 'bg-slate-50 border-slate-200',
@@ -648,9 +713,9 @@ export const CalendarWorkspace: React.FC = () => {
     sidebarFooter: isDark ? 'bg-[#0c0d14]' : 'bg-slate-50',
     actionTableHdr: isDark ? 'bg-[#0c0d14] border-slate-800' : 'bg-slate-50 border-slate-200',
     actionTableRow: isDark ? 'divide-slate-800/40 hover:bg-slate-900/20' : 'divide-slate-100 hover:bg-slate-50',
-    monthCell: isDark ? 'border-slate-800/40 bg-[#0f1022]/40 hover:border-slate-700' : 'border-slate-200 bg-white hover:border-slate-300',
-    monthCellActive: isDark ? 'border-indigo-500/60 bg-indigo-950/10' : 'border-indigo-400 bg-indigo-50/60',
-    dayNum: isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100',
+    monthCell: isDark ? 'border-slate-800/40 bg-[#0f1022]/40 hover:border-slate-700' : 'border-slate-300 bg-white hover:border-slate-400',
+    monthCellActive: isDark ? 'border-indigo-500/60 bg-indigo-950/10' : 'border-indigo-500 bg-indigo-50/80',
+    dayNum: isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 font-semibold hover:bg-slate-100',
     momBadge: isDark ? 'bg-emerald-900/40 text-emerald-400' : 'bg-emerald-100 text-emerald-700',
     transcriptBadge: isDark ? 'bg-indigo-900/40 text-indigo-400' : 'bg-indigo-100 text-indigo-700',
   };
@@ -757,22 +822,62 @@ export const CalendarWorkspace: React.FC = () => {
     setOpenDropdownId(null);
   };
 
-  const dayHeaders = [
-    { name: 'Mon', num: 19, index: 0 },
-    { name: 'Tue', num: 20, index: 1 },
-    { name: 'Wed', num: 21, index: 2 },
-    { name: 'Thu', num: 22, index: 3 },
-    { name: 'Fri', num: 23, index: 4 },
-  ];
+  const dayHeaders = useMemo(() => {
+    const current = new Date();
+    const dayOfWeek = current.getDay();
+    const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(current);
+    monday.setDate(current.getDate() + distanceToMonday);
+    
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    return dayNames.map((name, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      return {
+        name,
+        num: d.getDate(),
+        index: i,
+        monthName: d.toLocaleDateString('en-US', { month: 'short' }),
+        fullMonth: d.toLocaleDateString('en-US', { month: 'long' }),
+        year: d.getFullYear(),
+        dateString: d.toISOString().split('T')[0]
+      };
+    });
+  }, []);
 
   // Month view weeks
-  const monthWeeks = [
-    [{ num: 28, month: false, di: 0 }, { num: 29, month: false, di: 1 }, { num: 30, month: false, di: 2 }, { num: 1, month: true, di: 3 }, { num: 2, month: true, di: 4 }],
-    [{ num: 5, month: true, di: 0 }, { num: 6, month: true, di: 1 }, { num: 7, month: true, di: 2 }, { num: 8, month: true, di: 3 }, { num: 9, month: true, di: 4 }],
-    [{ num: 12, month: true, di: 0 }, { num: 13, month: true, di: 1 }, { num: 14, month: true, di: 2 }, { num: 15, month: true, di: 3 }, { num: 16, month: true, di: 4 }],
-    [{ num: 19, month: true, di: 0 }, { num: 20, month: true, di: 1, active: true }, { num: 21, month: true, di: 2 }, { num: 22, month: true, di: 3 }, { num: 23, month: true, di: 4 }],
-    [{ num: 26, month: true, di: 0 }, { num: 27, month: true, di: 1 }, { num: 28, month: true, di: 2 }, { num: 29, month: true, di: 3 }, { num: 30, month: true, di: 4 }],
-  ];
+  const monthWeeks = useMemo(() => {
+    const current = new Date();
+    const year = current.getFullYear();
+    const month = current.getMonth();
+    
+    const firstDayOfMonth = new Date(year, month, 1);
+    const dayOfWeek = firstDayOfMonth.getDay();
+    const distanceToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const startMonday = new Date(firstDayOfMonth);
+    startMonday.setDate(firstDayOfMonth.getDate() + distanceToMonday);
+    
+    const weeks = [];
+    for (let w = 0; w < 5; w++) {
+      const week = [];
+      for (let d = 0; d < 5; d++) {
+        const date = new Date(startMonday);
+        date.setDate(startMonday.getDate() + w * 7 + d);
+        
+        const isCurrentMonth = date.getMonth() === month;
+        const isToday = date.getDate() === current.getDate() && date.getMonth() === current.getMonth() && date.getFullYear() === current.getFullYear();
+        
+        week.push({
+          num: date.getDate(),
+          month: isCurrentMonth,
+          di: d,
+          active: isToday,
+        });
+      }
+      weeks.push(week);
+    }
+    return weeks;
+  }, []);
 
   // ── Meeting block layout (overlap detection) ──
   const getBlockLayout = (meet: Meeting): { left: string; width: string } => {
@@ -861,21 +966,46 @@ export const CalendarWorkspace: React.FC = () => {
 
           {/* Date & time */}
           <div className={`flex items-center gap-4 text-[11px] font-medium ${tw.textMuted}`}>
-            <span className="flex items-center gap-1.5"><Calendar className="w-3 h-3" />{m.date || 'May 20, 2026'}</span>
+            <span className="flex items-center gap-1.5">
+              <Calendar className="w-3 h-3" />
+              {(() => {
+                const dayHeader = dayHeaders[m.dayIndex];
+                return dayHeader ? `${dayHeader.monthName} ${dayHeader.num}, ${dayHeader.year}` : m.date;
+              })()}
+            </span>
             <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" />{m.timeLabel}</span>
             <span className="flex items-center gap-1.5"><Globe className="w-3 h-3" />{m.timezone || 'IST'}</span>
           </div>
 
           {/* Meet link */}
-          <div className={`flex items-center justify-between px-3 py-2 rounded-xl border ${tw.meetLinkBg}`}>
-            <a href={`https://${m.meetLink}`} target="_blank" rel="noreferrer"
-              className="flex items-center gap-2 text-[11px] text-emerald-500 font-semibold hover:text-emerald-400 transition-colors min-w-0">
-              <Video className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">{m.meetLink}</span>
-              <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-60" />
-            </a>
-            <button onClick={() => handleCopyLink(m.meetLink)} className={`p-1 transition-colors flex-shrink-0 ${tw.textDim} hover:text-indigo-500`}>
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          <div className="space-y-2">
+            <div className={`flex items-center justify-between px-3 py-2 rounded-xl border ${tw.meetLinkBg}`}>
+              <a href={`https://${m.meetLink}`} target="_blank" rel="noreferrer"
+                className="flex items-center gap-2 text-[11px] text-emerald-500 font-semibold hover:text-emerald-400 transition-colors min-w-0">
+                <Video className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{m.meetLink}</span>
+                <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-60" />
+              </a>
+              <button onClick={() => handleCopyLink(m.meetLink)} className={`p-1 transition-colors flex-shrink-0 ${tw.textDim} hover:text-indigo-500`}>
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+            
+            <button
+              onClick={() => {
+                const attendeesList = m.attendees.map(a => a.name.split(' ')[0]).join(', ');
+                const shareText = `📅 *Meeting invitation:* _${m.title}_\n⏰ *Time:* ${m.timeLabel}\n🔗 *Link:* https://${m.meetLink}\n👥 *Attendees:* ${attendeesList}`;
+                localStorage.setItem('gos_pending_chat_msg', shareText);
+                navigate('/workspace/chat');
+              }}
+              className={`w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-[11px] font-bold transition-all ${
+                isDark
+                  ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20'
+                  : 'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+              }`}
+            >
+              <Send className="w-3 h-3" />
+              Share to Team Chat
             </button>
           </div>
 
@@ -1129,7 +1259,7 @@ export const CalendarWorkspace: React.FC = () => {
                       {/* Rows */}
                       <div className={`divide-y ${isDark ? 'divide-slate-800/40' : 'divide-slate-100'}`}>
                         {m.actionItems.map(act => (
-                          <div key={act.id} className={`grid grid-cols-12 px-3 py-2.5 items-center group/row transition-colors ${tw.actionTableRow}`}>
+                          <div key={act.id} className={`grid grid-cols-12 px-3 py-2.5 items-center group transition-colors ${tw.actionTableRow}`}>
                             <div className="col-span-6 flex items-center gap-2 pr-2">
                               {m.momStatus !== 'sent' && (
                                 <input type="checkbox" checked={!!act.completed}
@@ -1163,14 +1293,17 @@ export const CalendarWorkspace: React.FC = () => {
                                 </div>
                               )}
                             </div>
-                            <div className="col-span-3 flex items-center justify-end gap-1.5">
+                            <div className="col-span-2 flex items-center justify-end">
                               <input type="text" value={act.dueDate} readOnly={m.momStatus === 'sent'}
                                 onChange={e => handleUpdateActionItem(m.id, act.id, { dueDate: e.target.value })}
                                 className={`bg-transparent border-0 outline-none text-[10px] text-right w-full font-mono ${tw.textMuted} ${m.momStatus === 'sent' ? 'cursor-default' : ''}`} />
+                            </div>
+                            <div className="col-span-1 flex items-center justify-end">
                               {m.momStatus !== 'sent' && (
                                 <button onClick={() => handleDeleteActionItem(m.id, act.id)}
-                                  className={`opacity-0 group-hover/row:opacity-100 transition-all flex-shrink-0 ${tw.textFaint} hover:text-rose-400`}>
-                                  <Trash2 className="w-3 h-3" />
+                                  className={`transition-colors ${isDark ? 'text-slate-400 hover:text-rose-400' : 'text-slate-500 hover:text-rose-600'}`}
+                                  title="Delete item">
+                                  <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               )}
                             </div>
@@ -1236,6 +1369,8 @@ export const CalendarWorkspace: React.FC = () => {
         <CreateMeetingModal
           onClose={() => setShowCreateModal(false)}
           onSave={m => setMeetings(prev => [...prev, m])}
+          teamMembers={teamMembers}
+          dayHeaders={dayHeaders}
         />
       )}
 
@@ -1243,16 +1378,21 @@ export const CalendarWorkspace: React.FC = () => {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
 
         {/* Toolbar */}
-        <div className={`h-14 px-5 flex items-center justify-between border-b flex-shrink-0 transition-colors ${isDark ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-200 bg-white'}`}>
+        <div className={`h-14 px-5 flex items-center justify-between border-b flex-shrink-0 transition-colors ${isDark ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-300 bg-white'}`}>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { setActiveDayIndex(1); setCurrentView('week'); }}
-              className={`px-3 py-1.5 border rounded-lg text-xs font-semibold transition-colors ${isDark ? 'border-slate-800 hover:bg-slate-800/40 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}>
+              onClick={() => {
+                const today = new Date();
+                const currentDay = today.getDay();
+                const todayIdx = currentDay >= 1 && currentDay <= 5 ? currentDay - 1 : 2;
+                setActiveDayIndex(todayIdx);
+              }}
+              className={`px-3 py-1.5 border rounded-lg text-xs font-semibold transition-colors ${isDark ? 'border-slate-800 hover:bg-slate-800/40 text-slate-300' : 'border-slate-300 hover:bg-slate-50 text-slate-600'}`}>
               Today
             </button>
-            <div className={`flex border rounded-lg overflow-hidden ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+            <div className={`flex border rounded-lg overflow-hidden ${isDark ? 'border-slate-800' : 'border-slate-300'}`}>
               <button onClick={() => currentView === 'day' && setActiveDayIndex(p => Math.max(0, p - 1))}
-                className={`p-1.5 border-r transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-500 hover:text-white border-slate-800' : 'hover:bg-slate-50 text-slate-400 hover:text-slate-700 border-slate-200'}`}>
+                className={`p-1.5 border-r transition-colors ${isDark ? 'hover:bg-slate-800 text-slate-500 hover:text-white border-slate-800' : 'hover:bg-slate-50 text-slate-400 hover:text-slate-700 border-slate-300'}`}>
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
               <button onClick={() => currentView === 'day' && setActiveDayIndex(p => Math.min(4, p + 1))}
@@ -1261,7 +1401,9 @@ export const CalendarWorkspace: React.FC = () => {
               </button>
             </div>
             <span className={`text-sm font-bold ${tw.text}`}>
-              {currentView === 'day' ? `${dayHeaders[activeDayIndex].name} May ${dayHeaders[activeDayIndex].num}, 2026` : 'May 2026'}
+              {currentView === 'day'
+                ? `${dayHeaders[activeDayIndex].name} ${dayHeaders[activeDayIndex].monthName} ${dayHeaders[activeDayIndex].num}, ${dayHeaders[activeDayIndex].year}`
+                : `${dayHeaders[2].fullMonth} ${dayHeaders[2].year}`}
             </span>
           </div>
 
@@ -1273,12 +1415,12 @@ export const CalendarWorkspace: React.FC = () => {
               ))}
             </div>
             {/* View toggle */}
-            <div className={`flex p-0.5 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'}`}>
+            <div className={`flex p-0.5 rounded-lg border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-200/80 border-slate-300'}`}>
               {(['day', 'week', 'month'] as const).map(v => (
                 <button key={v} onClick={() => setCurrentView(v)}
                   className={`px-3 py-1 text-[11px] font-bold capitalize rounded-md transition-all ${currentView === v
-                    ? isDark ? 'bg-[#1c1e2e] text-indigo-400 shadow-sm' : 'bg-white text-indigo-600 shadow-sm'
-                    : isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-500 hover:text-slate-700'
+                    ? isDark ? 'bg-[#1c1e2e] text-indigo-400 shadow-sm' : 'bg-white text-indigo-700 shadow-sm border border-slate-200'
+                    : isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-600 hover:text-slate-900 font-bold'
                     }`}>{v}</button>
               ))}
             </div>
@@ -1296,15 +1438,15 @@ export const CalendarWorkspace: React.FC = () => {
           {currentView === 'week' && (
             <div style={{ minHeight: `${HOUR_ROWS.length * HOUR_HEIGHT + 50}px` }}>
               {/* Day headers */}
-              <div className={`flex sticky top-0 z-10 border-b ${theme === 'dark' ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-200 bg-white'}`}>
-                <div className={`w-14 border-r py-3 text-[9px] font-mono text-right pr-2 ${theme === 'dark' ? 'border-slate-800/40 text-slate-600' : 'border-slate-200 text-slate-400'}`}>GMT+5:30</div>
+              <div className={`flex sticky top-0 z-10 border-b ${theme === 'dark' ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-300 bg-white'}`}>
+                <div className={`w-14 border-r py-3 text-[9px] font-mono text-right pr-2 ${theme === 'dark' ? 'border-slate-800/40 text-slate-600' : 'border-slate-300 text-slate-500 font-bold'}`}>GMT+5:30</div>
                 <div className="flex-1 grid grid-cols-5">
                   {dayHeaders.map(day => (
                     <div key={day.name}
                       onClick={() => { setActiveDayIndex(day.index); setCurrentView('day'); }}
-                      className={`py-3 flex flex-col items-center border-r last:border-r-0 cursor-pointer transition-colors ${theme === 'dark' ? 'border-slate-800/40 hover:bg-slate-800/10' : 'border-slate-200 hover:bg-slate-50'}`}>
-                      <span className={`text-[9px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>{day.name}</span>
-                      <span className={`text-xs font-bold mt-0.5 w-6 h-6 flex items-center justify-center rounded-full transition-colors ${day.index === activeDayIndex ? 'bg-indigo-600 text-white' : theme === 'dark' ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'
+                      className={`py-3 flex flex-col items-center border-r last:border-r-0 cursor-pointer transition-colors ${theme === 'dark' ? 'border-slate-800/40 hover:bg-slate-800/10' : 'border-slate-300 hover:bg-slate-50'}`}>
+                      <span className={`text-[9px] font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-slate-500' : 'text-slate-600 font-bold'}`}>{day.name}</span>
+                      <span className={`text-xs font-bold mt-0.5 w-6 h-6 flex items-center justify-center rounded-full transition-colors ${day.index === activeDayIndex ? 'bg-indigo-600 text-white' : theme === 'dark' ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-800 hover:bg-slate-100'
                         }`}>{day.num}</span>
                     </div>
                   ))}
@@ -1314,9 +1456,9 @@ export const CalendarWorkspace: React.FC = () => {
               {/* Grid */}
               <div className="flex">
                 {/* Hour labels */}
-                <div className={`w-14 flex-shrink-0 border-r ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200'}`}>
+                <div className={`w-14 flex-shrink-0 border-r ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-300'}`}>
                   {HOUR_ROWS.map((hour, idx) => (
-                    <div key={hour} className={`text-[9px] font-mono text-right pr-2 select-none ${theme === 'dark' ? 'text-slate-600' : 'text-slate-400'}`}
+                    <div key={hour} className={`text-[9px] font-mono text-right pr-2 select-none ${theme === 'dark' ? 'text-slate-600' : 'text-slate-500 font-bold'}`}
                       style={{ height: HOUR_HEIGHT, paddingTop: idx === 0 ? 0 : 2 }}>
                       {idx > 0 && formatHourLabel(hour)}
                     </div>
@@ -1326,10 +1468,10 @@ export const CalendarWorkspace: React.FC = () => {
                 {/* Day columns */}
                 <div className="flex-1 grid grid-cols-5">
                   {dayHeaders.map(day => (
-                    <div key={day.index} className={`relative border-r last:border-r-0 ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200'}`}>
+                    <div key={day.index} className={`relative border-r last:border-r-0 ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-300'}`}>
                       {/* Hour lines */}
                       {HOUR_ROWS.map(hour => (
-                        <div key={hour} className={`border-b ${theme === 'dark' ? 'border-slate-900/80' : 'border-slate-200/60'}`} style={{ height: HOUR_HEIGHT }} />
+                        <div key={hour} className={`border-b ${theme === 'dark' ? 'border-slate-900/80' : 'border-slate-300'}`} style={{ height: HOUR_HEIGHT }} />
                       ))}
                       {/* Meeting blocks */}
                       <div className="absolute inset-0">
@@ -1350,13 +1492,17 @@ export const CalendarWorkspace: React.FC = () => {
                               className={`absolute px-2 py-1.5 rounded-[4px] cursor-pointer overflow-hidden group/blk transition-all ${s.bg} ${s.border} ${isSelected ? 'ring-1 ring-white/20' : 'hover:brightness-125'}`}
                               style={{ top, height, left: l, width: w, zIndex: isSelected ? 2 : 1 }}>
                               <div className="flex items-center justify-between">
-                                <span className={`text-[9px] font-bold truncate ${s.text}`}>{meet.title}</span>
+                                <span className={`text-[10.5px] font-bold truncate ${s.text}`}>{meet.title}</span>
                                 <a href={`https://${meet.meetLink}`} target="_blank" rel="noreferrer"
                                   onClick={e => e.stopPropagation()} className="opacity-0 group-hover/blk:opacity-100">
                                   <Video className="w-3 h-3 text-emerald-400" />
                                 </a>
                               </div>
-                              {height > 44 && <p className="text-[9px] text-slate-500 truncate">{meet.timeLabel}</p>}
+                              {height > 44 && (
+                                <p className={`text-[9.5px] font-semibold truncate ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
+                                  {meet.timeLabel}
+                                </p>
+                              )}
                               {height > 60 && (
                                 <div className="flex gap-1 mt-1 flex-wrap">
                                   {meet.momStatus === 'sent' && <span className={`text-[8px] px-1 py-0.5 rounded ${tw.momBadge}`}>MoM</span>}
@@ -1384,18 +1530,18 @@ export const CalendarWorkspace: React.FC = () => {
           {/* ── DAY VIEW ── */}
           {currentView === 'day' && (
             <div>
-              <div className={`flex sticky top-0 z-10 border-b ${isDark ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-200 bg-white'}`}>
-                <div className={`w-14 border-r py-3 text-[9px] font-mono text-right pr-2 ${isDark ? 'border-slate-800/40 text-slate-600' : 'border-slate-200 text-slate-400'}`}>GMT+5:30</div>
+              <div className={`flex sticky top-0 z-10 border-b ${isDark ? 'border-slate-800/60 bg-[#0c0d14]' : 'border-slate-300 bg-white'}`}>
+                <div className={`w-14 border-r py-3 text-[9px] font-mono text-right pr-2 ${isDark ? 'border-slate-800/40 text-slate-600' : 'border-slate-300 text-slate-500 font-bold'}`}>GMT+5:30</div>
                 <div className="flex-1 py-3 flex items-center justify-center">
                   <span className={`text-xs font-bold ${tw.text}`}>
-                    {dayHeaders[activeDayIndex].name}, {dayHeaders[activeDayIndex].num} May 2026
+                    {dayHeaders[activeDayIndex].name}, {dayHeaders[activeDayIndex].num} {dayHeaders[activeDayIndex].monthName} {dayHeaders[activeDayIndex].year}
                   </span>
                 </div>
               </div>
               <div className="flex">
-                <div className={`w-14 flex-shrink-0 border-r ${isDark ? 'border-slate-800/40' : 'border-slate-200'}`}>
+                <div className={`w-14 flex-shrink-0 border-r ${isDark ? 'border-slate-800/40' : 'border-slate-300'}`}>
                   {HOUR_ROWS.map((hour, idx) => (
-                    <div key={hour} className={`text-[9px] font-mono text-right pr-2 select-none ${isDark ? 'text-slate-600' : 'text-slate-400'}`}
+                    <div key={hour} className={`text-[9px] font-mono text-right pr-2 select-none ${isDark ? 'text-slate-600' : 'text-slate-500 font-bold'}`}
                       style={{ height: HOUR_HEIGHT, paddingTop: idx === 0 ? 0 : 2 }}>
                       {idx > 0 && formatHourLabel(hour)}
                     </div>
@@ -1426,8 +1572,16 @@ export const CalendarWorkspace: React.FC = () => {
                             <a href={`https://${meet.meetLink}`} target="_blank" rel="noreferrer"
                               onClick={e => e.stopPropagation()} className="hover:opacity-100 opacity-60"><Video className="w-3.5 h-3.5 text-emerald-400" /></a>
                           </div>
-                          {height > 40 && <p className="text-[10px] text-slate-500 mt-0.5">{meet.timeLabel}</p>}
-                          {height > 65 && meet.project && <p className="text-[10px] text-slate-500 mt-0.5">{meet.project}</p>}
+                          {height > 40 && (
+                            <p className={`text-[10px] font-semibold mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                              {meet.timeLabel}
+                            </p>
+                          )}
+                          {height > 65 && meet.project && (
+                            <p className={`text-[10px] font-medium mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                              {meet.project}
+                            </p>
+                          )}
                           {height > 80 && (
                             <div className="flex gap-1.5 mt-2">
                               <span className={`text-[9px] px-1.5 py-0.5 rounded ${s.badge}`}>{s.label}</span>
@@ -1462,7 +1616,9 @@ export const CalendarWorkspace: React.FC = () => {
                 {monthWeeks.map((week, wi) => (
                   <div key={wi} className="grid grid-cols-5 gap-1.5">
                     {week.map((cell, ci) => {
-                      const cellMeetings = wi === 3 ? meetings.filter(m => m.dayIndex === cell.di) : [];
+                      const activeWeekIndex = monthWeeks.findIndex(w => w.some(d => d.active));
+                      const displayWeekIdx = activeWeekIndex !== -1 ? activeWeekIndex : 3;
+                      const cellMeetings = wi === displayWeekIdx ? meetings.filter(m => m.dayIndex === cell.di) : [];
                       const isActive = (cell as any).active;
                       return (
                         <div key={ci}
@@ -1476,7 +1632,7 @@ export const CalendarWorkspace: React.FC = () => {
                                 <div key={meet.id}
                                   onClick={e => { e.stopPropagation(); setSelectedMeetingId(meet.id); }}
                                   className={`text-[8px] font-semibold px-1.5 py-0.5 rounded truncate cursor-pointer transition-all ${s.bg} ${s.text} border-l-2 ${meet.id === selectedMeetingId ? 'ring-1 ring-indigo-500' : ''}`}
-                                  style={{ borderColor: s.dot.replace('bg-', '#').slice(0, 7) }}>
+                                  style={{ borderColor: s.color }}>
                                   {meet.title}
                                 </div>
                               );
