@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth, UserRole } from '../context/AuthContext';
 import { Sun, Moon, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const [email, setEmail] = useState('kavya.chopra@genessence.com');
   const [password, setPassword] = useState('password123');
   const [role, setRole] = useState<UserRole>('Director');
@@ -62,6 +66,14 @@ export const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getFirstNameFromEmail = (emailStr: string) => {
+    if (!emailStr) return 'Kavya';
+    const localPart = emailStr.split('@')[0];
+    if (!localPart) return 'Kavya';
+    const firstPart = localPart.split('.')[0] || localPart;
+    return firstPart.charAt(0).toUpperCase() + firstPart.slice(1);
   };
 
   return (
@@ -209,7 +221,7 @@ export const Login: React.FC = () => {
             className={`p-2 rounded-xl border transition-all ${
               isDark 
                 ? 'border-slate-800 bg-slate-900/50 hover:bg-slate-900 text-slate-300' 
-                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-650'
+                : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600'
             }`}
           >
             {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -223,7 +235,7 @@ export const Login: React.FC = () => {
               Welcome back,
             </h2>
             <h2 className="text-3xl md:text-4xl font-bold text-[#6D4AFF] mt-1.5 m-0">
-              Kavya 👋
+              {getFirstNameFromEmail(email)} 👋
             </h2>
             <p className={`mt-2.5 text-xs font-semibold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               Sign in to continue to your G-OS workspace

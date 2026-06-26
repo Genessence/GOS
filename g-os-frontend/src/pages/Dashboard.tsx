@@ -1,21 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  FolderGit2, 
-  CheckSquare, 
-  MessageSquareDiff, 
-  Users, 
-  Calendar, 
-  Mail, 
-  Plus, 
-  Bell, 
+import {
+  FolderGit2,
+  CheckSquare,
+  MessageSquareDiff,
+  Users,
+  Calendar,
+  Mail,
+  Plus,
+  Bell,
   MessageSquare,
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { user, theme } = useAuth();
+  const navigate = useNavigate();
 
   // Mock workspace statistics matching dashboard design
   const stats = [
@@ -25,27 +28,80 @@ export const Dashboard: React.FC = () => {
     { label: 'Team Members', value: '38', change: '+3 from last week', trend: 'up', color: 'text-sky-500', bg: 'bg-sky-500/10' }
   ];
 
-  // Mock timeline schedule
-  const schedule = [
-    { time: '09:30 AM', title: 'Client Sync - Alpha Project', duration: '30m', source: 'Calendar', color: 'bg-emerald-500/10 text-emerald-500' },
-    { time: '11:00 AM', title: 'MoM Review - Beta Project', duration: '45m', source: 'Calendar', color: 'bg-indigo-500/10 text-indigo-500' },
-    { time: '02:00 PM', title: 'Sprint Planning', duration: '1h', source: 'Slack', color: 'bg-purple-500/10 text-purple-500' },
-    { time: '04:30 PM', title: 'Design Review - Gamma', duration: '30m', source: 'Calendar', color: 'bg-cyan-500/10 text-cyan-500' }
-  ];
+  // Helper to format dynamic dates relative to today
+  const getRelativeDateStr = (daysOffset: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() + daysOffset);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const currentFormattedDate = new Date().toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  // Dynamic timeline schedule loaded from localStorage to show realtime meetings and attendees
+  const schedule = useMemo(() => {
+    let meetingsList: any[] = [];
+    try {
+      const stored = localStorage.getItem('gos_meetings');
+      if (stored) {
+        meetingsList = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    
+    const currentDayOfWeek = new Date().getDay();
+    const todayIndex = currentDayOfWeek >= 1 && currentDayOfWeek <= 5 ? currentDayOfWeek - 1 : 2; // Wednesday default
+
+    const typeColors: Record<string, string> = {
+      'one-one': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+      'sprint-ceremony': 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20',
+      'client-facing': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+      'internal': 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+    };
+
+    if (meetingsList.length === 0) {
+      return [
+        { time: '09:30 AM', title: 'Client Sync - Alpha Project', duration: '30m', color: 'bg-emerald-500/10 text-emerald-500', attendees: [] },
+        { time: '11:00 AM', title: 'MoM Review - Beta Project', duration: '45m', color: 'bg-indigo-500/10 text-indigo-500', attendees: [] },
+        { time: '02:00 PM', title: 'Sprint Planning', duration: '1h', color: 'bg-purple-500/10 text-purple-500', attendees: [] },
+        { time: '04:30 PM', title: 'Design Review - Gamma', duration: '30m', color: 'bg-cyan-500/10 text-cyan-500', attendees: [] }
+      ];
+    }
+
+    return meetingsList
+      .filter(m => m.dayIndex === todayIndex)
+      .sort((a, b) => a.startHour - b.startHour)
+      .map(m => {
+        const durationMin = Math.round((m.endHour - m.startHour) * 60);
+        const durationStr = durationMin >= 60 ? `${durationMin / 60}h` : `${durationMin}m`;
+        const timeStr = m.timeLabel.split(' – ')[0] || m.timeLabel.split(' - ')[0] || '';
+        return {
+          time: timeStr,
+          title: m.title,
+          duration: durationStr,
+          color: typeColors[m.type] || 'bg-slate-500/10 text-slate-500',
+          attendees: m.attendees || [],
+        };
+      });
+  }, []);
 
   // Mock notifications matching user's image exactly
   const notifications = [
     { title: 'PR #128 has been merged', subtitle: 'Alpha Project', time: '5m ago', type: 'git', read: false },
-    { title: 'New MoM generated', subtitle: 'Beta Project - 20 May 2025', time: '15m ago', type: 'mom', read: false },
+    { title: 'New MoM generated', subtitle: `Beta Project - ${new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}`, time: '15m ago', type: 'mom', read: false },
     { title: 'Meeting reminder', subtitle: 'Client Sync - Alpha Project', time: '30m ago', type: 'calendar', read: false },
     { title: 'Leave request approved', subtitle: 'Rahul Sharma', time: '1h ago', type: 'leave', read: true }
   ];
 
   // Mock tasks matching user's image
   const tasks = [
-    { title: 'Review API integration', project: 'Alpha Project', priority: 'High', date: 'May 21', color: 'border-rose-500 text-rose-500 bg-rose-500/5' },
-    { title: 'Update project documentation', project: 'Beta Project', priority: 'Medium', date: 'May 22', color: 'border-amber-500 text-amber-500 bg-amber-500/5' },
-    { title: 'UI testing and feedback', project: 'Gamma Project', priority: 'Low', date: 'May 23', color: 'border-emerald-500 text-emerald-500 bg-emerald-500/5' }
+    { title: 'Review API integration', project: 'Alpha Project', priority: 'High', date: getRelativeDateStr(1), color: 'border-rose-500 text-rose-500 bg-rose-500/5' },
+    { title: 'Update project documentation', project: 'Beta Project', priority: 'Medium', date: getRelativeDateStr(2), color: 'border-amber-500 text-amber-500 bg-amber-500/5' },
+    { title: 'UI testing and feedback', project: 'Gamma Project', priority: 'Low', date: getRelativeDateStr(3), color: 'border-emerald-500 text-emerald-500 bg-emerald-500/5' }
   ];
 
   // Mock Project Health
@@ -61,30 +117,44 @@ export const Dashboard: React.FC = () => {
   const textMutedClass = theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
   const innerBgClass = theme === 'dark' ? 'bg-[#141624]/40 border-slate-800/50' : 'bg-slate-50 border-slate-200/50';
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
-    <div className="p-8 space-y-8 max-w-[1600px] mx-auto">
+    <div className="h-[calc(100vh-4rem)] p-8 flex flex-col justify-between gap-5 max-w-[1600px] mx-auto overflow-hidden">
       {/* Welcome Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className={`text-3xl font-bold tracking-tight m-0 flex items-center gap-2 ${textTitleClass}`}>
-            Good morning, {user?.name.split(' ')[0] || 'Kavya'} <span className="animate-bounce">👋</span>
+            {getGreeting()}, {user?.name.split(' ')[0] || 'Kavya'} <span className="animate-bounce">👋</span>
           </h1>
           <p className={`${textMutedClass} text-sm mt-1`}>Here's what's happening across your workspace today.</p>
         </div>
 
         {/* Date Selector */}
-        <div className={`border px-4 py-2.5 rounded-xl flex items-center space-x-2 text-xs font-semibold ${
-          theme === 'dark' ? 'bg-[#141624]/60 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700 shadow-xs'
-        }`}>
+        <div className={`border px-4 py-2.5 rounded-xl flex items-center space-x-2 text-xs font-semibold ${theme === 'dark' ? 'bg-[#141624]/60 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700 shadow-xs'
+          }`}>
           <Calendar className="w-4 h-4 text-indigo-500" />
-          <span>May 20, 2026</span>
+          <span>{currentFormattedDate}</span>
         </div>
       </div>
 
       {/* Grid of core metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {stats.map((stat, i) => (
-          <div key={i} className={`border p-6 rounded-2xl flex items-center justify-between relative overflow-hidden group hover:border-indigo-500/40 transition-all duration-300 ${cardBgClass}`}>
+          <div key={i}
+            onClick={() => {
+              if (i === 0) navigate('/projects/overview');
+              if (i === 1) navigate('/team/timesheets');
+              if (i === 2) navigate('/workspace/reviews');
+              if (i === 3) navigate('/team');
+            }}
+            className={`border p-6 rounded-2xl flex items-center justify-between relative overflow-hidden group hover:border-indigo-500/40 cursor-pointer transition-all duration-300 hover:scale-[1.01] hover:shadow-xs ${cardBgClass}`}
+          >
             <div className="space-y-2">
               <span className={`text-xs font-semibold uppercase tracking-wider block ${textMutedClass}`}>{stat.label}</span>
               <h2 className={`text-3xl font-bold m-0 leading-none ${textTitleClass}`}>{stat.value}</h2>
@@ -103,29 +173,39 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Primary Analytics & Project Health Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
         {/* Project Overview Pie/Chart Mockup */}
-        <div className={`border p-6 rounded-2xl space-y-6 lg:col-span-2 ${cardBgClass}`}>
-          <div className="flex items-center justify-between">
-            <h3 className={`text-base font-bold ${textTitleClass}`}>Project Overview</h3>
-            <select className={`border text-xs rounded-xl px-3 py-1.5 outline-none ${
-              theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-350' : 'bg-slate-50 border-slate-200 text-slate-600'
-            }`}>
+        <div className={`border p-6 rounded-2xl flex flex-col justify-between h-full lg:col-span-2 ${cardBgClass}`}>
+          <div className="flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-2.5">
+              <h3 className={`text-base font-bold ${textTitleClass}`}>Project Overview</h3>
+              <button 
+                onClick={() => navigate('/projects/overview')} 
+                className="text-[10px] font-bold text-indigo-500 hover:text-indigo-400 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline transition-colors mt-0.5"
+              >
+                Manage Projects
+              </button>
+            </div>
+            <select className={`border text-xs rounded-xl px-3 py-1.5 outline-none transition-colors ${theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-300 hover:border-slate-700' : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
+              }`}>
               <option>All Projects</option>
             </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center py-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center flex-1 min-h-0 py-2">
             {/* Left Column: Radial progress and indicators */}
-            <div className={`flex flex-col sm:flex-row items-center justify-around md:col-span-1 pr-4 gap-4 border-r ${
-              theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
-            }`}>
+            <div className={`flex flex-col sm:flex-row items-center justify-around md:col-span-1 pr-4 gap-4 border-r h-full ${theme === 'dark' ? 'border-slate-800/40' : 'border-slate-200/60'
+              }`}>
               {/* Visual simulation of Total Progress radial chart */}
               <div className="flex items-center justify-center relative flex-shrink-0">
                 <svg className="w-32 h-32 transform -rotate-90">
                   <circle cx="64" cy="64" r="54" stroke={theme === 'dark' ? '#1c1e30' : '#e2e8f0'} strokeWidth="10" fill="transparent" />
-                  <circle cx="64" cy="64" r="54" stroke="#10b981" strokeWidth="10" fill="transparent" strokeDasharray="339" strokeDashoffset="108" strokeLinecap="round" />
-                  <circle cx="64" cy="64" r="54" stroke="#f59e0b" strokeWidth="10" fill="transparent" strokeDasharray="339" strokeDashoffset="260" strokeLinecap="round" />
+                  {/* On Track Segment: 58.3% */}
+                  <circle cx="64" cy="64" r="54" stroke="#10b981" strokeWidth="10" fill="transparent" strokeDasharray="197 339" strokeDashoffset="0" strokeLinecap="round" />
+                  {/* At Risk Segment: 25% */}
+                  <circle cx="64" cy="64" r="54" stroke="#f59e0b" strokeWidth="10" fill="transparent" strokeDasharray="85 339" strokeDashoffset="-197" strokeLinecap="round" />
+                  {/* Delayed Segment: 16.7% */}
+                  <circle cx="64" cy="64" r="54" stroke="#ef4444" strokeWidth="10" fill="transparent" strokeDasharray="57 339" strokeDashoffset="-282" strokeLinecap="round" />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className={`text-xl font-bold ${textTitleClass}`}>68%</span>
@@ -160,26 +240,23 @@ export const Dashboard: React.FC = () => {
             </div>
 
             {/* Right Column: Line chart (Progress over time) */}
-            <div className="md:col-span-2 space-y-4 relative">
-              <div className="flex items-center justify-between">
+            <div className="md:col-span-2 space-y-2 relative h-full flex flex-col justify-between">
+              <div className="flex items-center justify-between flex-shrink-0">
                 <span className={`text-xs font-bold uppercase tracking-wider ${textMutedClass}`}>Progress Over Time</span>
-                <select className={`border text-[10px] rounded-lg px-2.5 py-1 outline-none ${
-                  theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
-                }`}>
+                <select className={`border text-[10px] rounded-lg px-2.5 py-1 outline-none ${theme === 'dark' ? 'bg-[#141624] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
+                  }`}>
                   <option>This Month</option>
                 </select>
               </div>
 
               {/* High fidelity SVG line chart */}
-              <div className={`w-full h-44 relative rounded-xl p-2 border ${
-                theme === 'dark' ? 'bg-[#0a0b10]/40 border-slate-800/20' : 'bg-slate-50/50 border-slate-200/50'
-              }`}>
-                {/* Custom tooltip badge matching mockup */}
-                <div className={`absolute left-[58%] top-[12%] border shadow-xl rounded-lg px-3 py-1.5 z-10 flex flex-col items-center ${
-                  theme === 'dark' ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+              <div className={`w-full flex-1 min-h-[120px] relative rounded-xl p-2 border ${theme === 'dark' ? 'bg-[#0a0b10]/40 border-slate-800/20' : 'bg-slate-50/50 border-slate-200/50'
                 }`}>
-                  <span className={`text-[9px] font-bold leading-none ${theme === 'dark' ? 'text-slate-400' : 'text-slate-450'}`}>May 20</span>
-                  <span className={`text-xs font-bold mt-0.5 leading-none ${theme === 'dark' ? 'text-indigo-650' : 'text-indigo-400'}`}>68%</span>
+                {/* Custom tooltip badge matching mockup */}
+                <div className={`absolute left-[58%] top-[12%] border shadow-xl rounded-lg px-3 py-1.5 z-10 flex flex-col items-center ${theme === 'dark' ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+                  }`}>
+                  <span className={`text-[9px] font-bold leading-none ${theme === 'dark' ? 'text-slate-400' : 'text-slate-400'}`}>May 20</span>
+                  <span className={`text-xs font-bold mt-0.5 leading-none ${theme === 'dark' ? 'text-indigo-600' : 'text-indigo-600'}`}>68%</span>
                 </div>
 
                 <svg className="w-full h-full" viewBox="0 0 500 150" fill="none">
@@ -230,43 +307,55 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Today's Schedule Card */}
-        <div className={`border p-6 rounded-2xl flex flex-col justify-between ${cardBgClass}`}>
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className={`text-base font-bold ${textTitleClass}`}>Today's Schedule</h3>
-              <a href="/workspace/calendar" className="text-xs font-bold text-indigo-500 hover:text-indigo-400 transition-colors">View Calendar</a>
-            </div>
+        <div className={`border p-6 rounded-2xl flex flex-col h-full ${cardBgClass}`}>
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
+            <h3 className={`text-base font-bold ${textTitleClass}`}>Today's Schedule</h3>
+            <button onClick={() => navigate('/workspace/calendar')} className="text-xs font-bold text-indigo-500 hover:text-indigo-400 transition-colors">View Calendar</button>
+          </div>
 
-            <div className="space-y-4">
-              {schedule.map((slot, i) => (
-                <div key={i} className={`flex items-center justify-between p-3 rounded-xl border ${innerBgClass}`}>
-                  <div className="flex items-center space-x-3">
-                    <span className={`text-xs font-medium w-16 ${textMutedClass}`}>{slot.time}</span>
-                    <span className={`text-xs font-bold truncate max-w-[150px] ${textTitleClass}`}>{slot.title}</span>
+          <div className="space-y-3 overflow-y-auto flex-1 pr-1">
+            {schedule.map((slot, i) => (
+              <div key={i} className={`flex items-center justify-between p-3 rounded-xl border ${innerBgClass}`}>
+                <div className="flex items-center space-x-3 min-w-0">
+                  <span className={`text-xs font-medium w-16 flex-shrink-0 ${textMutedClass}`}>{slot.time}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className={`text-xs font-bold truncate max-w-[160px] ${textTitleClass}`}>{slot.title}</span>
+                    {slot.attendees && slot.attendees.length > 0 && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <div className="flex -space-x-1 overflow-hidden">
+                          {slot.attendees.slice(0, 3).map((att: any, idx: number) => (
+                            <img key={idx} src={att.avatar} alt={att.name} className="inline-block h-3.5 w-3.5 rounded-full ring-1 ring-white object-cover" title={att.name} />
+                          ))}
+                        </div>
+                        {slot.attendees.length > 3 && (
+                          <span className="text-[8px] text-slate-500 font-semibold">+{slot.attendees.length - 3}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${slot.color}`}>
-                    {slot.duration}
-                  </span>
                 </div>
-              ))}
-            </div>
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full flex-shrink-0 ${slot.color}`}>
+                  {slot.duration}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Tasks & Project Health Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
         {/* My Tasks lists */}
-        <div className={`border p-6 rounded-2xl space-y-6 ${cardBgClass}`}>
-          <div className="flex items-center justify-between">
+        <div className={`border p-6 rounded-2xl flex flex-col h-full ${cardBgClass}`}>
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h3 className={`text-base font-bold ${textTitleClass}`}>My Tasks</h3>
             <div className="flex space-x-3 text-xs font-semibold">
-              <button className="text-indigo-550 border-b border-indigo-500 pb-1">Upcoming</button>
+              <button className={`border-b border-indigo-500 pb-1 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`}>Upcoming</button>
               <button className={`${textMutedClass} hover:text-indigo-500 transition-colors`}>In Progress</button>
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 overflow-y-auto flex-1 pr-1">
             {tasks.map((task, i) => (
               <div key={i} className={`p-4 border rounded-2xl flex items-center justify-between ${innerBgClass}`}>
                 <div className="space-y-1">
@@ -285,26 +374,51 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Project Health progress meters */}
-        <div className={`border p-6 rounded-2xl space-y-6 ${cardBgClass}`}>
-          <div className="flex items-center justify-between">
+        <div className={`border p-6 rounded-2xl flex flex-col h-full ${cardBgClass}`}>
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h3 className={`text-base font-bold ${textTitleClass}`}>Project Health</h3>
-            <a href="/projects" className="text-xs font-bold text-indigo-500 hover:text-indigo-400 transition-colors">View All</a>
+            <button 
+              onClick={() => navigate('/projects/overview')} 
+              className="text-xs font-bold text-indigo-500 hover:text-indigo-400 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+            >
+              View All
+            </button>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-4 overflow-y-auto flex-1 pr-1">
             {projects.map((project, i) => (
-              <div key={i} className="space-y-2">
+              <div 
+                key={i} 
+                onClick={() => navigate('/projects/overview')}
+                className={`p-2.5 rounded-xl border transition-all duration-300 cursor-pointer group flex flex-col gap-2 ${
+                  theme === 'dark' 
+                    ? 'border-transparent hover:bg-slate-800/10 hover:border-slate-800/40' 
+                    : 'border-transparent hover:bg-slate-50 hover:border-slate-200/60 shadow-xs hover:shadow-xs'
+                }`}
+              >
                 <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className={theme === 'dark' ? 'text-slate-350' : 'text-slate-700'}>{project.name}</span>
-                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                    project.status === 'On Track' ? 'bg-emerald-500/10 text-emerald-500' :
-                    project.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500'
+                  <span className={`transition-colors flex items-center gap-1 ${
+                    theme === 'dark' 
+                      ? 'text-slate-300 group-hover:text-indigo-400' 
+                      : 'text-slate-700 group-hover:text-indigo-600'
                   }`}>
+                    {project.name}
+                    <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-[-4px] group-hover:translate-x-0" />
+                  </span>
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1.5 ${
+                    project.status === 'On Track' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                    project.status === 'At Risk' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' : 
+                    'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      project.status === 'On Track' ? 'bg-emerald-500 animate-pulse' :
+                      project.status === 'At Risk' ? 'bg-amber-500 animate-pulse' : 'bg-rose-500 animate-pulse'
+                    }`} />
                     {project.status}
                   </span>
                 </div>
                 <div className={`w-full h-1.5 rounded-full overflow-hidden ${theme === 'dark' ? 'bg-[#1c1e30]' : 'bg-slate-200'}`}>
-                  <div className={`h-full ${project.color}`} style={{ width: `${project.progress}%` }} />
+                  <div className={`h-full transition-all duration-500 ${project.color}`} style={{ width: `${project.progress}%` }} />
                 </div>
               </div>
             ))}
@@ -312,17 +426,16 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Recent Notifications feed */}
-        <div className={`border p-6 rounded-2xl space-y-6 ${cardBgClass}`}>
-          <div className="flex items-center justify-between">
+        <div className={`border p-6 rounded-2xl flex flex-col h-full ${cardBgClass}`}>
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h3 className={`text-base font-bold ${textTitleClass}`}>Recent Notifications</h3>
-            <span className="text-xs font-bold text-indigo-500 hover:underline cursor-pointer">View All</span>
+            <button onClick={() => navigate('/notifications')} className="text-xs font-bold text-indigo-500 hover:underline">View All</button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 overflow-y-auto flex-1 pr-1">
             {notifications.map((notif, i) => (
-              <div key={i} className={`flex items-start space-x-3 p-2 rounded-xl transition-all ${
-                theme === 'dark' ? 'hover:bg-slate-800/20' : 'hover:bg-slate-100/50'
-              }`}>
+              <div key={i} onClick={() => navigate('/notifications')} className={`flex items-start space-x-3 p-2 rounded-xl transition-all cursor-pointer ${theme === 'dark' ? 'hover:bg-slate-800/20' : 'hover:bg-slate-100/50'
+                }`}>
                 <div className="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0" />
                 <div className="flex-1 space-y-0.5">
                   <h4 className={`text-xs font-bold leading-tight ${textTitleClass}`}>{notif.title}</h4>
@@ -335,26 +448,32 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Connected Integrations Status Bar */}
-      <div className={`border p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 ${cardBgClass}`}>
+      <div className={`border p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 flex-shrink-0 ${cardBgClass}`}>
         <span className={`text-xs font-bold uppercase tracking-wider ${textMutedClass}`}>Connected Integrations</span>
         <div className="flex flex-wrap gap-4">
-          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${
-            theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
-          }`}>
+          <div 
+            onClick={() => navigate('/workspace/mail')}
+            className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border cursor-pointer hover:border-indigo-500/80 hover:bg-indigo-500/5 transition-all duration-200 ${theme === 'dark' ? 'bg-slate-900/60 border-slate-800/60' : 'bg-slate-50 border-slate-200'
+            }`}
+          >
             <Mail className="w-4 h-4 text-rose-500" />
             <span className={`text-[11px] font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Gmail</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           </div>
-          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${
-            theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
-          }`}>
+          <div 
+            onClick={() => navigate('/workspace/calendar')}
+            className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border cursor-pointer hover:border-indigo-500/80 hover:bg-indigo-500/5 transition-all duration-200 ${theme === 'dark' ? 'bg-slate-900/60 border-slate-800/60' : 'bg-slate-50 border-slate-200'
+            }`}
+          >
             <Calendar className="w-4 h-4 text-indigo-550" />
             <span className={`text-[11px] font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>Calendar</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           </div>
-          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border ${
-            theme === 'dark' ? 'bg-slate-900/60 border-slate-850' : 'bg-slate-50 border-slate-200'
-          }`}>
+          <div 
+            onClick={() => navigate('/projects')}
+            className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border cursor-pointer hover:border-indigo-500/80 hover:bg-indigo-500/5 transition-all duration-200 ${theme === 'dark' ? 'bg-slate-900/60 border-slate-800/60' : 'bg-slate-50 border-slate-200'
+            }`}
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-slate-400">
               <path d="M6 3v12" />
               <circle cx="18" cy="6" r="3" />
